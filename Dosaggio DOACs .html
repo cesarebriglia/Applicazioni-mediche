@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOAC Calculator Pro+ | FA & Embolia Polmonare</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 { font-size: 26px; font-weight: 700; letter-spacing: 0.5px; }
+        .header p { font-size: 14px; opacity: 0.85; margin-top: 6px; }
+        
+        .mode-switch {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .mode-btn {
+            padding: 10px 28px;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mode-btn.active {
+            background: #48bb78;
+            border-color: #48bb78;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+        }
+        .mode-btn:hover:not(.active) { background: rgba(255,255,255,0.2); }
+
+        .form-container { padding: 30px; }
+        .info-box {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 14px 18px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #2b6cb0;
+        }
+        .info-box.pe-mode { background: #fff5f5; border-left-color: #e53e3e; color: #9b2c2c; }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #2d3748;
+            margin: 25px 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        .form-group input, .form-group select {
+            padding: 11px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4299e1;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        }
+
+        .pe-specific { display: none; }
+        .pe-specific.show { display: block; }
+
+        .child-pugh-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            background: #f7fafc;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .cp-item { background: white; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .cp-item label { display: block; font-weight: 600; font-size: 12px; color: #2d3748; margin-bottom: 6px; }
+        .cp-item select { width: 100%; padding: 7px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 13px; }
+
+        .cp-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 10px 0;
+            display: none;
+        }
+        .cp-result.show { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .cp-score { font-size: 28px; font-weight: 700; margin: 5px 0; }
+        .cp-class { font-size: 16px; font-weight: 600; }
+        .cp-class.A { color: #68d391; }
+        .cp-class.B { color: #f6ad55; }
+        .cp-class.C { color: #fc8181; }
+
+        .gfr-results {
+            background: linear-gradient(135deg, #4299e1 0%, #667eea 100%);
+            color: white;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .gfr-results.show { display: block; }
+        .gfr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 10px; }
+        .gfr-card { background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px; text-align: center; }
+        .gfr-value { font-size: 24px; font-weight: 700; margin: 5px 0; }
+        .gfr-label { font-size: 11px; opacity: 0.9; }
+
+        .form-section {
+            background: #f7fafc;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            border-left: 4px solid #4299e1;
+        }
+        .form-section.warning { border-left-color: #ed8936; }
+        .form-section.danger { border-left-color: #e53e3e; }
+        .form-section h3 { color: #2d3748; margin-bottom: 12px; font-size: 15px; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
+        .checkbox-item {
+            display: flex; align-items: center; padding: 8px 10px;
+            background: white; border-radius: 6px; cursor: pointer;
+        }
+        .checkbox-item:hover { background: #edf2f7; }
+        .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; margin-right: 10px; accent-color: #4299e1; }
+        .checkbox-item label { cursor: pointer; font-size: 13px; color: #4a5568; }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-calculate:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
+
+        #results { display: none; margin-top: 25px; }
+        .alert-box {
+            background: #fed7d7;
+            border: 2px solid #e53e3e;
+            color: #c53030;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .alert-box h3 { margin-bottom: 8px; font-size: 16px; }
+        .alert-box ul { margin-left: 18px; margin-top: 8px; }
+
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+            border-left: 5px solid #4299e1;
+            transition: transform 0.2s;
+        }
+        .result-card:hover { transform: translateX(4px); }
+        .result-card.approved { border-left-color: #48bb78; background: #f0fff4; }
+        .result-card.warning { border-left-color: #ed8936; background: #fffaf0; }
+        .result-card.contraindicated { border-left-color: #e53e3e; background: #fff5f5; opacity: 0.85; }
+
+        .drug-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-ok { background: #48bb78; color: white; }
+        .badge-warning { background: #ed8936; color: white; }
+        .badge-no { background: #e53e3e; color: white; }
+
+        .phase-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 10px 0;
+        }
+        @media (max-width: 600px) { .phase-box { grid-template-columns: 1fr; } }
+        .phase { background: #edf2f7; padding: 10px; border-radius: 6px; }
+        .phase h4 { font-size: 13px; color: #4a5568; margin-bottom: 4px; font-weight: 600; }
+        .phase .dose { font-size: 15px; font-weight: 700; color: #2d3748; }
+
+        .criteria-list { list-style: none; margin-top: 8px; }
+        .criteria-list li { padding: 3px 0; color: #4a5568; font-size: 13px; }
+        .criteria-list li:before { content: "• "; color: #4299e1; font-weight: bold; }
+
+        .warning-box {
+            background: #fffaf0;
+            border: 1px solid #ed8936;
+            color: #9c4221;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+        .pe-note {
+            background: #ebf8ff;
+            border: 1px solid #3182ce;
+            color: #2b6cb0;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+            .form-container { padding: 18px; }
+            .header h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💊 DOAC Calculator Pro+</h1>
+            <p>Fibrillazione Atriale & Embolia Polmonare/TVP - Linee Guida ESC/EHRA 2024</p>
+            <div class="mode-switch">
+                <button class="mode-btn active" onclick="setMode('FA')"> Fibrillazione Atriale</button>
+                <button class="mode-btn" onclick="setMode('PE')">🫁 Embolia Polmonare / TVP</button>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div id="infoBox" class="info-box">
+                <strong>📐 Modalità FA:</strong> Inserisca i parametri. L'app calcolerà Cockcroft-Gault (per dosaggio), CKD-EPI e Child-Pugh. I DOAC sono indicati in FA non valvolare con ≥1 fattore di rischio.
+            </div>
+
+            <!-- DATI PAZIENTE -->
+            <div class="section-title"> Dati Paziente e Funzione Renale</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="eta">Età (anni) *</label>
+                    <input type="number" id="eta" min="18" max="100" placeholder="Es: 65" required>
+                </div>
+                <div class="form-group">
+                    <label for="sesso">Sesso *</label>
+                    <select id="sesso" required>
+                        <option value="">Seleziona...</option>
+                        <option value="M">Maschio</option>
+                        <option value="F">Femmina</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="peso">Peso (kg) *</label>
+                    <input type="number" id="peso" min="30" max="200" step="0.5" placeholder="Es: 78" required>
+                </div>
+                <div class="form-group">
+                    <label for="creatinina">Creatinina (mg/dL) *</label>
+                    <input type="number" id="creatinina" min="0.5" max="10" step="0.1" placeholder="Es: 1.2" required>
+                </div>
+            </div>
+
+            <div id="gfrResults" class="gfr-results">
+                <h3 style="font-size:16px;margin-bottom:8px;"> Funzione Renale Calcolata</h3>
+                <div class="gfr-grid">
+                    <div class="gfr-card">
+                        <div class="gfr-label">Cockcroft-Gault (dosaggio DOAC)</div>
+                        <div class="gfr-value" id="cgValue">-</div>
+                        <div style="font-size:11px;">mL/min</div>
+                    </div>
+                    <div class="gfr-card">
+                        <div class="gfr-label">CKD-EPI</div>
+                        <div class="gfr-value" id="ckdepiValue">-</div>
+                        <div style="font-size:11px;">mL/min/1.73m²</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VALUTAZIONE EPATICA -->
+            <div class="section-title">🔹 Valutazione Epatica (Child-Pugh)</div>
+            <div class="child-pugh-grid">
+                <div class="cp-item"><label>Bilirubina (mg/dL)</label>
+                    <select id="bilirubina" onchange="calcolaChildPugh()"><option value="">-</option><option value="1"><2 (1)</option><option value="2">2-6 (2)</option><option value="3">>6 (3)</option></select></div>
+                <div class="cp-item"><label>Albumina (g/dL)</label>
+                    <select id="albumina" onchange="calcolaChildPugh()"><option value="">-</option><option value="1">>3.5 (1)</option><option value="2">2.8-3.5 (2)</option><option value="3"><2.8 (3)</option></select></div>
+                <div class="cp-item"><label>INR</label>
+                    <select id="inr" onchange="calcolaChildPugh()"><option value="">-</option><option value="1"><1.7 (1)</option><option value="2">1.7-2.3 (2)</option><option value="3">>2.3 (3)</option></select></div>
+                <div class="cp-item"><label>Ascite</label>
+                    <select id="ascite" onchange="calcolaChildPugh()"><option value="">-</option><option value="1">Assente (1)</option><option value="2">Lieve/Mod (2)</option><option value="3">Tesa (3)</option></select></div>
+                <div class="cp-item"><label>Encefalopatia</label>
+                    <select id="encefalopatia" onchange="calcolaChildPugh()"><option value="">-</option><option value="1">Assente (1)</option><option value="2">I-II (2)</option><option value="3">III-IV (3)</option></select></div>
+            </div>
+            <div id="cpResult" class="cp-result">
+                <div style="font-size:13px;opacity:0.9;">Punteggio Child-Pugh</div>
+                <div class="cp-score" id="cpScore">-</div>
+                <div class="cp-class" id="cpClass">-</div>
+            </div>
+
+            <!-- CAMPI SPECIFICI EP -->
+            <div id="peFields" class="pe-specific">
+                <div class="section-title">🔹 Parametri Specifici EP/TVP</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="fasePe">Fase di trattamento</label>
+                        <select id="fasePe">
+                            <option value="iniziale">🔴 Iniziale (Carico)</option>
+                            <option value="mantenimento">🟢 Mantenimento</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="parenterale">Anticoagulazione parenterale pregressa (5-10 gg)?</label>
+                        <select id="parenterale">
+                            <option value="no">No (inizio diretto DOAC)</option>
+                            <option value="si">Sì (già in terapia evo/LMWH)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="instabilità">Instabilità emodinamica / Trombolisi prevista?</label>
+                        <select id="instabilità">
+                            <option value="no">No (EP submassiva/massaica stabile)</option>
+                            <option value="si">Sì (shock/ipotensione)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="neoplasia">Neoplasia attiva?</label>
+                        <select id="neoplasia">
+                            <option value="no">No</option>
+                            <option value="si">Sì (attenzione a lesioni GI/GU)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FARMACI E CONTROINDICAZIONI -->
+            <div class="form-section warning">
+                <h3>💊 Farmaci concomitanti (interazioni CYP3A4/P-gp)</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="verapamil"><label for="verapamil">Verapamil</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="amiodarone"><label for="amiodarone">Amiodarone</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="ketoconazolo"><label for="ketoconazolo">Ketoconazolo/Itraconazolo</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="rifampicina"><label for="rifampicina">Rifampicina/Carbamazepina/Fenitoina</label></div>
+                </div>
+            </div>
+
+            <div class="form-section danger">
+                <h3>🚫 Controindicazioni assolute → USARE LMWH/WARFARIN</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="valvola_meccanica"><label for="valvola_meccanica">Valvola cardiaca meccanica</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="stenosi_mitralica"><label for="stenosi_mitralica">Stenosi mitralica reumatica moderata-grave</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="aps"><label for="aps">APS tripla positiva</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="gravidanza"><label for="gravidanza">Gravidanza o allattamento</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="sanguinamento"><label for="sanguinamento">Sanguinamento attivo maggiore</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="coagulopatia"><label for="coagulopatia">Coagulopatia epatica / Piastrinopenia <50k</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="crCl_estrema"><label for="crCl_estrema">CrCl <15 mL/min o dialisi</label></div>
+                </div>
+            </div>
+
+            <button class="btn-calculate" onclick="calcolaTutto()">🔍 Calcola Terapia Anticoagulante</button>
+
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'FA';
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const infoBox = document.getElementById('infoBox');
+            const peFields = document.getElementById('peFields');
+            
+            if (mode === 'PE') {
+                infoBox.className = 'info-box pe-mode';
+                infoBox.innerHTML = `<strong>🫁 Modalità EP/TVP:</strong> Inserisca i parametri. L'app calcolerà fase iniziale/mantenimento, necessità di lead-in parenterale e aggiustamenti renali/epatici specifici per embolia polmonare.`;
+                peFields.classList.add('show');
+            } else {
+                infoBox.className = 'info-box';
+                infoBox.innerHTML = `<strong> Modalità FA:</strong> Inserisca i parametri. L'app calcolerà Cockcroft-Gault (per dosaggio), CKD-EPI e Child-Pugh. I DOAC sono indicati in FA non valvolare con ≥1 fattore di rischio.`;
+                peFields.classList.remove('show');
+            }
+            document.getElementById('results').style.display = 'none';
+        }
+
+        // === FUNZIONI DI CALCOLO ===
+        function calcolaCockcroftGault(eta, peso, creatinina, sesso) {
+            let crcl = ((140 - eta) * peso) / (creatinina * 72);
+            if (sesso === 'F') crcl *= 0.85;
+            return Math.round(crcl * 10) / 10;
+        }
+
+        function calcolaCKDEPI(eta, creatinina, sesso) {
+            let kappa = sesso === 'F' ? 0.7 : 0.9;
+            let alpha = sesso === 'F' ? -0.329 : -0.411;
+            let costante = sesso === 'F' ? 144 : 141;
+            let scr_kappa = creatinina / kappa;
+            let gfr;
+            if (sesso === 'F') {
+                gfr = creatinina <= 0.7 ? 
+                    costante * Math.pow(scr_kappa, alpha) * Math.pow(0.993, eta) :
+                    costante * Math.pow(scr_kappa, -1.209) * Math.pow(0.993, eta);
+                gfr *= 1.018;
+            } else {
+                gfr = creatinina <= 0.9 ?
+                    costante * Math.pow(scr_kappa, alpha) * Math.pow(0.993, eta) :
+                    costante * Math.pow(scr_kappa, -1.209) * Math.pow(0.993, eta);
+            }
+            return Math.round(gfr);
+        }
+
+        function calcolaChildPugh() {
+            const punti = ['bilirubina','albumina','inr','ascite','encefalopatia']
+                .map(id => parseInt(document.getElementById(id).value) || 0)
+                .reduce((a,b) => a+b, 0);
+            
+            if (punti >= 5) {
+                const classe = punti <= 6 ? 'A' : punti <= 9 ? 'B' : 'C';
+                document.getElementById('cpScore').textContent = punti;
+                document.getElementById('cpClass').textContent = `Classe ${classe}`;
+                document.getElementById('cpClass').className = `cp-class ${classe}`;
+                document.getElementById('cpResult').classList.add('show');
+                return { punteggio: punti, classe };
+            }
+            return null;
+        }
+
+        function calcolaTutto() {
+            const eta = parseInt(document.getElementById('eta').value) || 0;
+            const sesso = document.getElementById('sesso').value;
+            const peso = parseFloat(document.getElementById('peso').value) || 0;
+            const creatinina = parseFloat(document.getElementById('creatinina').value) || 0;
+
+            if (!eta || !sesso || !peso || !creatinina) {
+                alert('⚠️ Compilare tutti i campi obbligatori (*)');
+                return;
+            }
+
+            const cg = calcolaCockcroftGault(eta, peso, creatinina, sesso);
+            const ckdepi = calcolaCKDEPI(eta, creatinina, sesso);
+            document.getElementById('cgValue').textContent = cg;
+            document.getElementById('ckdepiValue').textContent = ckdepi;
+            document.getElementById('gfrResults').classList.add('show');
+
+            const cp = calcolaChildPugh();
+            calcolaTerapia(eta, peso, cg, creatinina, sesso, cp);
+        }
+
+        function calcolaTerapia(eta, peso, gfr, creatinina, sesso, childPugh) {
+            const farmaci = {
+                verapamil: document.getElementById('verapamil').checked,
+                amiodarone: document.getElementById('amiodarone').checked,
+                ketoconazolo: document.getElementById('ketoconazolo').checked,
+                rifampicina: document.getElementById('rifampicina').checked
+            };
+            const controind = {
+                valvola: document.getElementById('valvola_meccanica').checked,
+                stenosi: document.getElementById('stenosi_mitralica').checked,
+                aps: document.getElementById('aps').checked,
+                gravidanza: document.getElementById('gravidanza').checked,
+                sanguinamento: document.getElementById('sanguinamento').checked,
+                coagulopatia: document.getElementById('coagulopatia').checked,
+                crCl_estrema: document.getElementById('crCl_estrema').checked
+            };
+
+            let html = '';
+            const controindicazioni = [];
+            if (controind.valvola) controindicazioni.push('Valvola meccanica');
+            if (controind.stenosi) controindicazioni.push('Stenosi mitralica reumatica');
+            if (controind.aps) controindicazioni.push('APS tripla positiva');
+            if (controind.gravidanza) controindicazioni.push('Gravidanza/allattamento');
+            if (controind.sanguinamento) controindicazioni.push('Sanguinamento attivo maggiore');
+            if (controind.coagulopatia) controindicazioni.push('Coagulopatia epatica/Piastrinopenia');
+            if (controind.crCl_estrema) controindicazioni.push('CrCl <15 mL/min o dialisi');
+
+            if (controindicazioni.length > 0) {
+                html += `<div class="alert-box"><h3>🚫 CONTROINDICAZIONI ASSOLUTE AI DOAC</h3>
+                    <ul>${controindicazioni.map(c=>`<li>${c}</li>`).join('')}</ul>
+                    <p style="margin-top:12px;font-weight:bold;">➡️ Utilizzare LMWH (eparina) o WARFARIN</p></div>`;
+            }
+
+            if (currentMode === 'PE') {
+                const fase = document.getElementById('fasePe').value;
+                const parenterale = document.getElementById('parenterale').value;
+                const instabile = document.getElementById('instabilità').value;
+                const neoplasia = document.getElementById('neoplasia').value;
+
+                if (instabile === 'si') {
+                    html += `<div class="alert-box" style="background:#fefcbf;border-color:#d69e2e;color:#975a16;">
+                        <h3>⚠️ INSTABILITÀ EMODINAMICA / EP MASSIVA</h3>
+                        <p>Richiede ricovero in terapia intensiva, supporto emodinamico e valutazione per trombolisi sistemica o embolectomia. I DOAC non sono appropriati come terapia iniziale in questa fase.</p>
+                    </div>`;
+                }
+
+                html += `<h2 style="margin:25px 0 15px;color:#2d3748;">📊 Dosaggio DOAC per EP/TVP - Fase: ${fase === 'iniziale' ? '🔴 Iniziale' : ' Mantenimento'}</h2>`;
+                html += `<p style="margin-bottom:15px;color:#718096;font-size:14px;">Cockcroft-Gault: <strong>${gfr} mL/min</strong> | Child-Pugh: <strong>${childPugh?.classe || 'Non calcolato'}</strong></p>`;
+            } else {
+                html += `<h2 style="margin:25px 0 15px;color:#2d3748;"> Dosaggio DOAC per Fibrillazione Atriale</h2>`;
+                html += `<p style="margin-bottom:15px;color:#718096;font-size:14px;">Cockcroft-Gault: <strong>${gfr} mL/min</strong> | Child-Pugh: <strong>${childPugh?.classe || 'Non calcolato'}</strong></p>`;
+            }
+
+            const doacResults = calcolaSingoloDOAC(eta, peso, gfr, creatinina, farmaci, childPugh, controind, currentMode);
+            
+            doacResults.forEach(d => {
+                const cls = d.status==='approved'?'approved':d.status==='warning'?'warning':'contraindicated';
+                const badge = d.status==='approved'?'badge-ok':d.status==='warning'?'badge-warning':'badge-no';
+                const txt = d.status==='approved'?'UTILIZZABILE':d.status==='warning'?'ATTENZIONE/AGGIUSTARE':'CONTROINDICATO';
+                
+                let doseHtml = '';
+                if (currentMode === 'PE' && d.fase) {
+                    doseHtml = `<div class="phase-box">
+                        <div class="phase"><h4>🔴 Fase Iniziale</h4><div class="dose">${d.fase.iniziale}</div></div>
+                        <div class="phase"><h4> Fase Mantenimento</h4><div class="dose">${d.fase.mantenimento}</div></div>
+                    </div>`;
+                } else {
+                    doseHtml = `<div class="dosage"><strong>Dosaggio:</strong> ${d.dosaggio}</div>`;
+                }
+
+                html += `<div class="result-card ${cls}">
+                    <div class="drug-name">${d.nome} <span class="badge ${badge}">${txt}</span></div>
+                    ${doseHtml}
+                    ${d.criteri.length?`<ul class="criteria-list">${d.criteri.map(c=>`<li>${c}</li>`).join('')}</ul>`:''}
+                    ${d.avv?`<div class="warning-box">⚠️ ${d.avv}</div>`:''}
+                    ${d.notePe?`<div class="pe-note">🫁 ${d.notePe}</div>`:''}
+                </div>`;
+            });
+
+            const res = document.getElementById('results');
+            res.innerHTML = html;
+            res.style.display = 'block';
+            res.scrollIntoView({behavior:'smooth'});
+        }
+
+        function calcolaSingoloDOAC(eta, peso, gfr, creatinina, farmaci, childPugh, controind, mode) {
+            const results = [];
+            const cpClasse = childPugh?.classe || 'A';
+            const haCoagulopatia = controind.coagulopatia || cpClasse === 'C';
+            const fase = mode === 'PE' ? document.getElementById('fasePe').value : null;
+            const parenterale = mode === 'PE' ? document.getElementById('parenterale').value : null;
+
+            // === APIXABAN ===
+            let apiStatus='approved', apiDose='5 mg × 2/die', apiCriteri=[], apiAvv='', apiFase=null, apiNote='';
+            if (haCoagulopatia) { apiStatus='contraindicated'; apiAvv='Controindicato in coagulopatia/Child-Pugh C'; }
+            else if (cpClasse==='B') { apiStatus='warning'; apiAvv='Usare con cautela in Child-Pugh B'; }
+            else {
+                if (mode === 'PE') {
+                    apiFase = { iniziale: '10 mg × 2/die × 7 giorni', mantenimento: '5 mg × 2/die' };
+                    let crit=0;
+                    if(eta>=80){crit++;apiCriteri.push('Età≥80');}
+                    if(peso<=60){crit++;apiCriteri.push('Peso≤60kg');}
+                    if(creatinina>=1.5){crit++;apiCriteri.push('Creat≥1.5mg/dL');}
+                    if(crit>=2){apiFase.mantenimento='2.5 mg × 2/die (ridotto)'; apiStatus='warning';}
+                    if(gfr<25){apiStatus='contraindicated';apiAvv='CrCl<25 mL/min';}
+                    else if(gfr<30){apiStatus='warning';apiAvv='Cautela se CrCl 25-30';}
+                    apiNote = "Approccio single-drug: non richiede anticoagulazione parenterale iniziale.";
+                } else {
+                    let crit=0;
+                    if(eta>=80){crit++;apiCriteri.push('Età≥80');}
+                    if(peso<=60){crit++;apiCriteri.push('Peso≤60kg');}
+                    if(creatinina>=1.5){crit++;apiCriteri.push('Creat≥1.5mg/dL');}
+                    if(crit>=2){apiDose='2.5 mg × 2/die'; apiStatus='warning';}
+                    if(gfr<25){apiStatus='contraindicated';apiAvv='CrCl<25 mL/min';}
+                    else if(gfr<30){apiStatus='warning';apiAvv='Cautela se CrCl 25-30';}
+                }
+            }
+            results.push({nome:'💙 APIXABAN (Eliquis®)',status:apiStatus,dosaggio:apiDose,fase:apiFase,criteri:apiCriteri,avv:apiAvv,notePe:apiNote});
+
+            // === RIVAROXABAN ===
+            let rivStatus='approved', rivDose='20 mg × 1/die', rivCriteri=[], rivAvv='', rivFase=null, rivNote='';
+            if (haCoagulopatia || cpClasse!=='A') { 
+                rivStatus='contraindicated'; 
+                rivAvv = cpClasse==='B' ? 'Controindicato in Child-Pugh B' : 'Controindicato in coagulopatia/Child-Pugh C'; 
+            } else {
+                if (mode === 'PE') {
+                    rivFase = { iniziale: '15 mg × 2/die × 21 giorni', mantenimento: '20 mg × 1/die' };
+                    rivCriteri.push('Assumere con cibo per assorbimento ottimale');
+                    if(gfr<30){rivStatus='contraindicated';rivAvv='CrCl<30 mL/min';}
+                    else if(gfr<50){rivStatus='warning';rivAvv='Cautela se CrCl 30-49 mL/min';}
+                    rivNote = "Approccio single-drug: non richiede anticoagulazione parenterale iniziale.";
+                } else {
+                    if(gfr>=50) rivCriteri.push('CrCl≥50');
+                    else if(gfr>=15){rivDose='15 mg × 1/die';rivCriteri.push('CrCl 15-49');rivStatus='warning';}
+                    else {rivStatus='contraindicated';rivAvv='CrCl<15 mL/min';}
+                    rivCriteri.push('Assumere con cibo');
+                }
+            }
+            results.push({nome:'💚 RIVAROXABAN (Xarelto®)',status:rivStatus,dosaggio:rivDose,fase:rivFase,criteri:rivCriteri,avv:rivAvv,notePe:rivNote});
+
+            // === DABIGATRAN ===
+            let dabStatus='approved', dabDose='150 mg × 2/die', dabCriteri=[], dabAvv='', dabFase=null, dabNote='';
+            if (haCoagulopatia || cpClasse==='C') { dabStatus='contraindicated'; dabAvv='Controindicato in coagulopatia/Child-Pugh C'; }
+            else if (cpClasse==='B') { dabStatus='warning'; dabAvv='Usare con cautela in Child-Pugh B'; }
+            else {
+                if (mode === 'PE') {
+                    dabFase = { iniziale: 'Richiede 5-10 giorni di parenterale (LMWH/evo)', mantenimento: '150 mg × 2/die' };
+                    if(eta>=80 || gfr>=30 && gfr<50 || farmaci.verapamil){
+                        dabFase.mantenimento = '110 mg × 2/die (aggiustato)';
+                        dabCriteri.push(eta>=80?'Età≥80':gfr<50?'CrCl 30-50':'Verapamil');
+                        dabStatus='warning';
+                    }
+                    if(gfr<30){dabStatus='contraindicated';dabAvv='CrCl<30 mL/min';}
+                    if(parenterale==='no'){dabNote="⚠️ Richiede 5-10 giorni di anticoagulazione parenterale PRIMA dell'inizio.";dabStatus='warning';}
+                    else { dabNote = "Paziente già in fase di transizione da parenterale a orale."; }
+                } else {
+                    if(gfr>=50) dabCriteri.push('CrCl≥50');
+                    else if(gfr>=30){dabDose='110 mg × 2/die';dabCriteri.push('CrCl 30-50');dabStatus='warning';}
+                    else {dabStatus='contraindicated';dabAvv='CrCl<30 mL/min';}
+                    if(eta>=80 && gfr>=30){dabDose='110 mg × 2/die (età)';dabCriteri.push('Età≥80');if(dabStatus==='approved')dabStatus='warning';}
+                    if(farmaci.verapamil && gfr>=30){dabDose='110 mg × 2/die (verapamil)';dabCriteri.push('Verapamil');if(dabStatus==='approved')dabStatus='warning';}
+                }
+            }
+            results.push({nome:'💛 DABIGATRAN (Pradaxa®)',status:dabStatus,dosaggio:dabDose,fase:dabFase,criteri:dabCriteri,avv:dabAvv,notePe:dabNote});
+
+            // === EDOXABAN ===
+            let edoStatus='approved', edoDose='60 mg × 1/die', edoCriteri=[], edoAvv='', edoFase=null, edoNote='';
+            if (haCoagulopatia || cpClasse!=='A') {
+                edoStatus='contraindicated';
+                edoAvv = cpClasse==='B' ? 'Controindicato in Child-Pugh B' : 'Controindicato in coagulopatia/Child-Pugh C';
+            } else {
+                if (mode === 'PE') {
+                    edoFase = { iniziale: 'Richiede 5-10 giorni di parenterale (LMWH/evo)', mantenimento: '60 mg × 1/die' };
+                    if(gfr>=15 && gfr<=50 || peso<=60 || (farmaci.verapamil || farmaci.amiodarone || farmaci.ketoconazolo)){
+                        edoFase.mantenimento = '30 mg × 1/die (aggiustato)';
+                        edoCriteri.push(gfr<50?'CrCl 15-50':peso<=60?'Peso≤60kg':'Inibitore P-gp');
+                        edoStatus='warning';
+                    }
+                    if(gfr<15 || gfr>95){edoStatus='contraindicated';edoAvv=gfr>95?'CrCl>95 mL/min (efficacia ridotta)':'CrCl<15 mL/min';}
+                    if(parenterale==='no'){edoNote="⚠️ Richiede 5-10 giorni di anticoagulazione parenterale PRIMA dell'inizio.";edoStatus='warning';}
+                    else { edoNote = "Paziente già in fase di transizione da parenterale a orale."; }
+                } else {
+                    if(gfr>95){edoStatus='warning';edoAvv='Efficacia ridotta se CrCl>95';edoCriteri.push('CrCl>95');}
+                    else if(gfr>=50) edoCriteri.push('CrCl 50-95');
+                    else if(gfr>=15){edoDose='30 mg × 1/die';edoCriteri.push('CrCl 15-50');edoStatus='warning';}
+                    else {edoStatus='contraindicated';edoAvv='CrCl<15 mL/min';}
+                    if(peso<=60 && gfr>=15 && gfr<=95){edoDose='30 mg × 1/die (peso)';edoCriteri.push('Peso≤60kg');if(edoStatus==='approved')edoStatus='warning';}
+                    if((farmaci.verapamil || farmaci.amiodarone || farmaci.ketoconazolo) && gfr>=15 && gfr<=95){
+                        edoDose='30 mg × 1/die (P-gp)';edoCriteri.push('Inibitore P-gp');if(edoStatus==='approved')edoStatus='warning';
+                    }
+                }
+            }
+            results.push({nome:'💜 EDOXABAN (Lixiana®)',status:edoStatus,dosaggio:edoDose,fase:edoFase,criteri:edoCriteri,avv:edoAvv,notePe:edoNote});
+
+            return results;
+        }
+    </script>
+</body>
+</html>
