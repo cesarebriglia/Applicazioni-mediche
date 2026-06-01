@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroPath — Riconoscimento Dolore Neuropatico</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F2EC;
+    --card: #FFFFFF;
+    --text: #1A1A1A;
+    --text-muted: #6B6B6B;
+    --accent: #2D5A8E;
+    --accent-light: #E8F0FA;
+    --accent2: #7A4F6D;
+    --accent2-light: #F5EEF3;
+    --success: #2A6B4A;
+    --success-light: #E5F2EB;
+    --warning: #8A5A00;
+    --warning-light: #FFF3DC;
+    --danger: #8A2A2A;
+    --danger-light: #FAEAEA;
+    --border: #E0DDD5;
+    --shadow: 0 2px 16px rgba(0,0,0,0.07);
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: var(--text);
+    color: #fff;
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span {
+    color: #A8C8F0;
+  }
+
+  .header-sub {
+    font-size: 12px;
+    font-weight: 300;
+    color: #aaa;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .progress-wrap {
+    background: #2D2D2D;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .progress-bar-outer {
+    flex: 1;
+    height: 4px;
+    background: #444;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-bar-inner {
+    height: 100%;
+    background: #A8C8F0;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: #999;
+    white-space: nowrap;
+  }
+
+  .main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .phase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  .phase-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    line-height: 1.7;
+  }
+
+  .question-block {
+    margin-bottom: 28px;
+  }
+
+  .question-label {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .q-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--text);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-choice {
+    padding: 10px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    transition: all 0.2s;
+  }
+
+  .btn-choice:hover {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+
+  .btn-choice.selected {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .btn-choice.selected-no {
+    border-color: #ccc;
+    background: #F5F5F5;
+    color: var(--text-muted);
+  }
+
+  .scale-wrap {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .scale-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scale-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+  .scale-btn.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    padding: 0 4px;
+  }
+
+  .checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .checkbox-item:hover { border-color: var(--accent); background: var(--accent-light); }
+
+  .checkbox-item.checked {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .chk-box {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 2px solid var(--border);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .checkbox-item.checked .chk-box {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .chk-tick {
+    display: none;
+    width: 10px;
+    height: 7px;
+    stroke: #fff;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .checkbox-item.checked .chk-tick { display: block; }
+
+  .chk-label { font-size: 14px; }
+  .chk-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+  }
+
+  .btn-nav {
+    padding: 12px 28px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid var(--text);
+    background: var(--text);
+    color: #fff;
+  }
+
+  .btn-nav:hover { opacity: 0.85; }
+  .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .btn-nav.secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
+  }
+
+  .btn-nav.secondary:hover { background: var(--bg); }
+
+  .info-box {
+    padding: 16px 20px;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+    border-left: 3px solid;
+  }
+
+  .info-box.info {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: #1a3a5c;
+  }
+
+  .info-box.warning {
+    background: var(--warning-light);
+    border-color: #D4A017;
+    color: #5a3a00;
+  }
+
+  .info-box.success {
+    background: var(--success-light);
+    border-color: var(--success);
+    color: #1a4a30;
+  }
+
+  .info-box.danger {
+    background: var(--danger-light);
+    border-color: #C0392B;
+    color: #5a1a1a;
+  }
+
+  /* RESULT */
+  .result-score-big {
+    text-align: center;
+    padding: 40px 0 32px;
+  }
+
+  .score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 40px;
+    border: 4px solid;
+  }
+
+  .score-circle.low { background: var(--success-light); border-color: var(--success); color: var(--success); }
+  .score-circle.mid { background: var(--warning-light); border-color: #D4A017; color: var(--warning); }
+  .score-circle.high { background: var(--danger-light); border-color: #C0392B; color: var(--danger); }
+
+  .result-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .result-sub { font-size: 15px; color: var(--text-muted); max-width: 480px; margin: 0 auto; }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 28px;
+  }
+
+  .result-item {
+    padding: 20px;
+    border-radius: var(--radius);
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+
+  .result-item-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .result-item-val {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .recommendations {
+    margin-top: 28px;
+  }
+
+  .rec-item {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .rec-item:last-child { border-bottom: none; }
+
+  .rec-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  .rec-body-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .rec-body-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  .scores-breakdown {
+    margin-top: 28px;
+  }
+
+  .breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .breakdown-label {
+    font-size: 13px;
+    min-width: 200px;
+    color: var(--text);
+  }
+
+  .breakdown-bar-outer {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .breakdown-bar-inner {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease 0.3s;
+  }
+
+  .breakdown-val {
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 30px;
+    text-align: right;
+    color: var(--text-muted);
+  }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 600px) {
+    header { padding: 20px; }
+    .progress-wrap { padding: 12px 20px; }
+    .main { padding: 24px 16px 60px; }
+    .card { padding: 24px 20px; }
+    .result-grid { grid-template-columns: 1fr; }
+    .scale-wrap { flex-wrap: wrap; }
+    .breakdown-label { min-width: 130px; font-size: 12px; }
+  }
+
+  .print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 100px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+
+  .print-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+  @media print {
+    header, .progress-wrap { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .btn-nav, .print-btn { display: none; }
+  }
+
+  .step-indicator {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+
+  .step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+  .step-dot.done { background: #A8C8F0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Neuro<span>Path</span></div>
+    <div class="header-sub">Percorso diagnostico • Dolore Neuropatico</div>
+  </div>
+  <button class="print-btn" onclick="window.print()">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    Stampa / PDF
+  </button>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar" style="width: 0%"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">Inizio</div>
+</div>
+
+<div class="main">
+  <div class="step-indicator" id="stepIndicator"></div>
+
+  <!-- STEP 0: Intro -->
+  <div id="step-0" class="step-content">
+    <div class="phase-badge"><span class="phase-dot"></span>Introduzione</div>
+    <div class="card">
+      <div class="card-title">Benvenuto nel percorso di riconoscimento del dolore neuropatico</div>
+      <div class="card-desc">
+        Questo strumento clinico guida nella valutazione sistematica del dolore neuropatico attraverso 4 fasi: <strong>anamnesi</strong>, <strong>caratteristiche del dolore</strong>, <strong>scala DN4</strong> e <strong>valutazione funzionale</strong>. Al termine riceverai un report dettagliato con indicazioni cliniche.
+      </div>
+      <div class="info-box info">
+        <strong>Nota clinica:</strong> Questo percorso è uno strumento di supporto alla valutazione clinica. Non sostituisce la diagnosi medica. Il dolore neuropatico richiede una valutazione multidisciplinare.
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 8px;">
+        <div style="padding: 16px; border-radius: var(--radius); background: var(--bg); border: 1px solid var(--border); text-align: center;">
+          <div style="font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--accent);">4</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Fasi di valutazione</div>
+        </div>
+        <div style="padding: 16px; border-radius: var(--radius); background: var(--bg); border: 1px solid var(--border); text-align: center;">
+          <div style="font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--accent);">~8'</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Tempo stimato</div>
+        </div>
+        <div style="padding: 16px; border-radius: var(--radius); background: var(--bg); border: 1px solid var(--border); text-align: center;">
+          <div style="font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--accent);">DN4</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Scala validata</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <div></div>
+      <button class="btn-nav" onclick="nextStep()">Inizia il percorso →</button>
+    </div>
+  </div>
+
+  <!-- STEP 1: Anamnesi -->
+  <div id="step-1" class="step-content hidden">
+    <div class="phase-badge"><span class="phase-dot"></span>Fase 1 — Anamnesi</div>
+    <div class="card">
+      <div class="card-title">Informazioni cliniche di base</div>
+      <div class="card-desc">Raccolta anamnestica per contestualizzare il quadro clinico del dolore.</div>
+
+      <div class="question-block">
+        <div class="question-label">
+          <span class="q-num">1</span>
+          <span>Il paziente ha una patologia nota che può causare dolore neuropatico?</span>
+        </div>
+        <div class="btn-group" id="q1">
+          <button class="btn-choice" data-val="diabete" onclick="selectChoice('q1', this)">Diabete mellito</button>
+          <button class="btn-choice" data-val="herpes" onclick="selectChoice('q1', this)">Herpes zoster / PHN</button>
+          <button class="btn-choice" data-val="lesione" onclick="selectChoice('q1', this)">Lesione nervosa / trauma</button>
+          <button class="btn-choice" data-val="sclerosi" onclick="selectChoice('q1', this)">Sclerosi multipla</button>
+          <button class="btn-choice" data-val="ictus" onclick="selectChoice('q1', this)">Ictus / lesione centrale</button>
+          <button class="btn-choice" data-val="tumore" onclick="selectChoice('q1', this)">Tumore / chemioterapia</button>
+          <button class="btn-choice" data-val="nessuna" onclick="selectChoice('q1', this)">Nessuna patologia nota</button>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">
+          <span class="q-num">2</span>
+          <span>Da quanto tempo è presente il dolore?</span>
+        </div>
+        <div class="btn-group" id="q2">
+          <button class="btn-choice" data-val="acuto" onclick="selectChoice('q2', this)">Meno di 1 mese</button>
+          <button class="btn-choice" data-val="subacuto" onclick="selectChoice('q2', this)">1–3 mesi</button>
+          <button class="btn-choice" data-val="cronico" onclick="selectChoice('q2', this)">3–12 mesi</button>
+          <button class="btn-choice" data-val="cronico-lungo" onclick="selectChoice('q2', this)">Più di 1 anno</button>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">
+          <span class="q-num">3</span>
+          <span>Localizzazione del dolore</span>
+        </div>
+        <div class="btn-group" id="q3">
+          <button class="btn-choice" data-val="arti-inf" onclick="selectChoice('q3', this)">Arti inferiori</button>
+          <button class="btn-choice" data-val="arti-sup" onclick="selectChoice('q3', this)">Arti superiori</button>
+          <button class="btn-choice" data-val="tronco" onclick="selectChoice('q3', this)">Tronco / torace</button>
+          <button class="btn-choice" data-val="faccia" onclick="selectChoice('q3', this)">Viso / testa</button>
+          <button class="btn-choice" data-val="diffuso" onclick="selectChoice('q3', this)">Diffuso / generalizzato</button>
+        </div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-nav secondary" onclick="prevStep()">← Indietro</button>
+      <button class="btn-nav" id="btn-next-1" onclick="nextStep()">Avanti →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Caratteristiche del dolore -->
+  <div id="step-2" class="step-content hidden">
+    <div class="phase-badge"><span class="phase-dot"></span>Fase 2 — Caratteristiche del dolore</div>
+    <div class="card">
+      <div class="card-title">Qualità e intensità del dolore</div>
+      <div class="card-desc">Seleziona tutte le caratteristiche che descrivono il dolore del paziente.</div>
+
+      <div class="question-block">
+        <div class="question-label">
+          <span class="q-num">4</span>
+          <span>Intensità media del dolore (NRS 0–10)</span>
+        </div>
+        <div class="scale-wrap" id="q4">
+          <button class="scale-btn" data-val="0" onclick="selectScale('q4', this)">0</button>
+          <button class="scale-btn" data-val="1" onclick="selectScale('q4', this)">1</button>
+          <button class="scale-btn" data-val="2" onclick="selectScale('q4', this)">2</button>
+          <button class="scale-btn" data-val="3" onclick="selectScale('q4', this)">3</button>
+          <button class="scale-btn" data-val="4" onclick="selectScale('q4', this)">4</button>
+          <button class="scale-btn" data-val="5" onclick="selectScale('q4', this)">5</button>
+          <button class="scale-btn" data-val="6" onclick="selectScale('q4', this)">6</button>
+          <button class="scale-btn" data-val="7" onclick="selectScale('q4', this)">7</button>
+          <button class="scale-btn" data-val="8" onclick="selectScale('q4', this)">8</button>
+          <button class="scale-btn" data-val="9" onclick="selectScale('q4', this)">9</button>
+          <button class="scale-btn" data-val="10" onclick="selectScale('q4', this)">10</button>
+        </div>
+        <div class="scale-labels" style="max-width: 454px;">
+          <span>Assente</span>
+          <span>Moderato</span>
+          <span>Insopportabile</span>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">
+          <span class="q-num">5</span>
+          <span>Seleziona tutte le qualità del dolore presenti</span>
+        </div>
+        <div class="checkbox-list" id="q5">
+          <label class="checkbox-item" onclick="toggleCheckbox(this, 'q5')">
+            <span class="chk-box"><svg class="chk-tick" viewBox="0 0 10 7"><polyline points="1,3.5 4,6.5 9,1"/></svg></span>
+            <div><div class="chk-label">Bruciore</div><div class="chk-desc">Sensazione di calore intenso, come fuoco sulla pelle</div></div>
+          </label>
+          <label class="checkbox-item" onclick="toggleCheckbox(this, 'q5')">
+            <span class="chk-box"><svg class="chk-tick" viewBox="0 0 10 7"><polyline points="1,3.5 4,6.5 9,1"/></svg></span>
+            <div><div class="chk-label">Scosse elettriche</div><div class="chk-desc">Fitte acute, come scariche elettriche</div></div>
+          </label>
+          <label class="checkbox-item" onclick="toggleCheckbox(this, 'q5')">
+            <span class="chk-box"><svg class="chk-tick" viewBox="0 0 10 7"><polyline points="1,3.5 4,6.5 9,1"/></svg></span>
+            <div><div class="chk-label">Formicolio / Parestesie</div><div class="chk-desc">Sensazione di spilli, aghi o intorpidimento</div></div>
+          </label>
+          <label class="checkbox-item" onclick="toggleCheckbox(this, 'q5')">
+            <span class="chk-box"><svg class="chk-tick" viewBox="0 0 10 7"><polyline points="1,3.5 4,6.5 9,1"/></svg></span>
+            <div><div class="chk-label">Pressione / morsa</div><div class="chk-desc">Sensazione di compressione o costrizione</div></div>
+          </label>
+          <label class="checkbox-item" onclick="toggleCheckbox(this, 'q5')">
+            <span class="chk-box"><svg class="chk-tick" viewBox="0 0 10 7"><polyline points="1,3.5 4,6.5 9,1"/></svg></span>
+            <div><div class="chk-label">Freddo doloroso</div><div class="chk-desc">Dolore evocato o aggravato dal freddo</div></div>
+          </label>
+          <label class="checkbox-item" onclick="toggleCheckbox(this, 'q5')">
+            <span class="chk-box"><svg class="chk-tick" viewBox="0 0 10 7"><polyline points="1,3.5 4,6.5 9,1"/></svg></span>
+            <div><div class="chk-label">Dolore al tatto (allodinia)</div><div class="chk-desc">Dolore provocato da stimoli normalmente non dolorosi</div></div>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-nav secondary" onclick="prevStep()">← Indietro</button>
+      <button class="btn-nav" onclick="nextStep()">Avanti →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Scala DN4 -->
+  <div id="step-3" class="step-content hidden">
+    <div class="phase-badge"><span class="phase-dot"></span>Fase 3 — Scala DN4</div>
+    <div class="card">
+      <div class="card-title">Questionario DN4</div>
+      <div class="card-desc">
+        Il DN4 (Douleur Neuropathique 4 questions) è lo strumento validato per la diagnosi di dolore neuropatico. Ogni risposta "Sì" vale 1 punto. <strong>Soglia diagnostica: ≥ 4/10.</strong>
+      </div>
+      <div class="info-box info">
+        <strong>Sezione A — Caratteristiche del dolore (riferite dal paziente)</strong>
+      </div>
+
+      <div id="dn4-items">
+        <div class="question-block" data-dn4="1">
+          <div class="question-label"><span class="q-num">D1</span><span>Il dolore ha una qualità di <strong>bruciore</strong>?</span></div>
+          <div class="btn-group" id="dn4-1">
+            <button class="btn-choice" data-val="1" onclick="selectDN4('dn4-1', this, 1)">Sì</button>
+            <button class="btn-choice" data-val="0" onclick="selectDN4('dn4-1', this, 0)">No</button>
+          </div>
+        </div>
+        <div class="question-block">
+          <div class="question-label"><span class="q-num">D2</span><span>Il dolore provoca <strong>sensazione di freddo doloroso</strong>?</span></div>
+          <div class="btn-group" id="dn4-2">
+            <button class="btn-choice" data-val="1" onclick="selectDN4('dn4-2', this, 1)">Sì</button>
+            <button class="btn-choice" data-val="0" onclick="selectDN4('dn4-2', this, 0)">No</button>
+          </div>
+        </div>
+        <div class="question-block">
+          <div class="question-label"><span class="q-num">D3</span><span>Il dolore assomiglia a <strong>scosse elettriche</strong>?</span></div>
+          <div class="btn-group" id="dn4-3">
+            <button class="btn-choice" data-val="1" onclick="selectDN4('dn4-3', this, 1)">Sì</button>
+            <button class="btn-choice" data-val="0" onclick="selectDN4('dn4-3', this, 0)">No</button>
+          </div>
+        </div>
+        <div class="question-block">
+          <div class="question-label"><span class="q-num">D4</span><span>Il dolore è associato a <strong>formicolio</strong> nella stessa area?</span></div>
+          <div class="btn-group" id="dn4-4">
+            <button class="btn-choice" data-val="1" onclick="selectDN4('dn4-4', this, 1)">Sì</button>
+            <button class="btn-choice" data-val="0" onclick="selectDN4('dn4-4', this, 0)">No</button>
+          </div>
+        </div>
+        <div class="question-block">
+          <div class="question-label"><span class="q-num">D5</span><span>Il dolore è associato a <strong>sensazione di punture di spillo</strong>?</span></div>
+          <div class="btn-group" id="dn4-5">
+            <button class="btn-choice" data-val="1" onclick="selectDN4('dn4-5', this, 1)">Sì</button>
+            <button class="btn-choice" data-val="0" onclick="selectDN4('dn4-5', this, 0)">No</button>
+          </div>
+        </div>
+        <div class="question-block">
+          <div class="question-label"><span class="q-num">D6</span><span>Il dolore è associato a <strong>intorpidimento</strong>?</span></div>
+          <div class="btn-group" id="dn4-6">
+            <button class="btn-choice" data-val="1" onclick="selectDN4('dn4-6', this, 1)">Sì</button>
+            <button class="btn-choice" data-val="0" onclick="selectDN4('dn4-6', this, 0)">No</button>
+          </div>
+        </div>
+
+        <div class="info-box info" style="margin-top: 24px;">
+          <strong>Sezione B — Esame clinico (rilevato dal medico)</strong>
+        </div>
+
+        <div class="question-block">
+          <div class="question-label"><span class="q-num">D7</span><span>È presente <strong>ipoestesia al tatto</strong> nell'area dolorosa?</span></div>
+          <div class="btn-group" id="dn4-7">
+            <button class="btn-choice" data-val="1" onclick="selectDN4('dn4-7', this, 1)">Sì</button>
+            <button class="btn-choice" data-val="0" onclick="selectDN4('dn4-7', this, 0)">No</button>
+          </div>
+        </div>
+        <div class="question-block">
+          <div class="question-label"><span class="q-num">D8</span><span>È presente <strong>ipoestesia al punfo</strong> nell'area dolorosa?</span></div>
+          <div class="btn-group" id="dn4-8">
+            <button class="btn-choice" data-val="1" onclick="selectDN4('dn4-8', this, 1)">Sì</button>
+            <button class="btn-choice" data-val="0" onclick="selectDN4('dn4-8', this, 0)">No</button>
+          </div>
+        </div>
+        <div class="question-block">
+          <div class="question-label"><span class="q-num">D9</span><span>È presente <strong>allodinia da sfioramento</strong> nell'area dolorosa?</span></div>
+          <div class="btn-group" id="dn4-9">
+            <button class="btn-choice" data-val="1" onclick="selectDN4('dn4-9', this, 1)">Sì</button>
+            <button class="btn-choice" data-val="0" onclick="selectDN4('dn4-9', this, 0)">No</button>
+          </div>
+        </div>
+        <div class="question-block">
+          <div class="question-label"><span class="q-num">D10</span><span>È presente <strong>allodinia da pressione</strong>?</span></div>
+          <div class="btn-group" id="dn4-10">
+            <button class="btn-choice" data-val="1" onclick="selectDN4('dn4-10', this, 1)">Sì</button>
+            <button class="btn-choice" data-val="0" onclick="selectDN4('dn4-10', this, 0)">No</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 28px; padding: 20px; background: var(--bg); border-radius: var(--radius); border: 1px solid var(--border);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 14px; color: var(--text-muted);">Punteggio DN4 parziale</span>
+          <span style="font-family: 'DM Serif Display', serif; font-size: 28px;" id="dn4-score-live">0 / 10</span>
+        </div>
+        <div style="height: 6px; background: var(--border); border-radius: 3px; margin-top: 12px; overflow: hidden;">
+          <div id="dn4-score-bar" style="height: 100%; width: 0%; background: var(--accent); border-radius: 3px; transition: width 0.4s;"></div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 6px; font-size: 11px; color: var(--text-muted);">Soglia diagnostica: 4/10</div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-nav secondary" onclick="prevStep()">← Indietro</button>
+      <button class="btn-nav" onclick="nextStep()">Avanti →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Valutazione funzionale -->
+  <div id="step-4" class="step-content hidden">
+    <div class="phase-badge"><span class="phase-dot"></span>Fase 4 — Impatto funzionale</div>
+    <div class="card">
+      <div class="card-title">Valutazione dell'impatto sulla qualità della vita</div>
+      <div class="card-desc">Valuta in che misura il dolore interferisce con le attività quotidiane e il benessere del paziente.</div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">F1</span><span>Interferenza con il <strong>sonno</strong></span></div>
+        <div class="btn-group" id="f1">
+          <button class="btn-choice" data-val="0" onclick="selectChoice('f1', this)">Nessuna</button>
+          <button class="btn-choice" data-val="1" onclick="selectChoice('f1', this)">Lieve</button>
+          <button class="btn-choice" data-val="2" onclick="selectChoice('f1', this)">Moderata</button>
+          <button class="btn-choice" data-val="3" onclick="selectChoice('f1', this)">Grave</button>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">F2</span><span>Interferenza con le <strong>attività quotidiane</strong></span></div>
+        <div class="btn-group" id="f2">
+          <button class="btn-choice" data-val="0" onclick="selectChoice('f2', this)">Nessuna</button>
+          <button class="btn-choice" data-val="1" onclick="selectChoice('f2', this)">Lieve</button>
+          <button class="btn-choice" data-val="2" onclick="selectChoice('f2', this)">Moderata</button>
+          <button class="btn-choice" data-val="3" onclick="selectChoice('f2', this)">Grave</button>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">F3</span><span>Interferenza con <strong>umore / stato psicologico</strong></span></div>
+        <div class="btn-group" id="f3">
+          <button class="btn-choice" data-val="0" onclick="selectChoice('f3', this)">Nessuna</button>
+          <button class="btn-choice" data-val="1" onclick="selectChoice('f3', this)">Lieve</button>
+          <button class="btn-choice" data-val="2" onclick="selectChoice('f3', this)">Moderata</button>
+          <button class="btn-choice" data-val="3" onclick="selectChoice('f3', this)">Grave</button>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">F4</span><span>Il paziente ha già <strong>ricevuto trattamenti</strong> per questo dolore?</span></div>
+        <div class="btn-group" id="f4">
+          <button class="btn-choice" data-val="no" onclick="selectChoice('f4', this)">No, nessun trattamento</button>
+          <button class="btn-choice" data-val="fans" onclick="selectChoice('f4', this)">FANS / analgesici comuni</button>
+          <button class="btn-choice" data-val="neuro" onclick="selectChoice('f4', this)">Farmaci neuropatici (gabapentin, pregabalin, ecc.)</button>
+          <button class="btn-choice" data-val="multi" onclick="selectChoice('f4', this)">Trattamento multidisciplinare</button>
+        </div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-nav secondary" onclick="prevStep()">← Indietro</button>
+      <button class="btn-nav" onclick="showResults()">Genera Report →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: Risultati -->
+  <div id="step-5" class="step-content hidden">
+    <div class="phase-badge"><span class="phase-dot"></span>Report Finale</div>
+    <div class="card">
+      <div class="result-score-big">
+        <div class="score-circle" id="result-circle">—</div>
+        <div class="result-title" id="result-title">—</div>
+        <div class="result-sub" id="result-sub">—</div>
+      </div>
+
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="result-item-label">Punteggio DN4</div>
+          <div class="result-item-val" id="res-dn4">—</div>
+        </div>
+        <div class="result-item">
+          <div class="result-item-label">Intensità NRS</div>
+          <div class="result-item-val" id="res-nrs">—</div>
+        </div>
+        <div class="result-item">
+          <div class="result-item-label">Patologia di base</div>
+          <div class="result-item-val" id="res-patologia">—</div>
+        </div>
+        <div class="result-item">
+          <div class="result-item-label">Durata dolore</div>
+          <div class="result-item-val" id="res-durata">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Profilo del dolore</div>
+      <div class="card-desc">Distribuzione dei punteggi per dominio valutato.</div>
+      <div class="scores-breakdown" id="breakdown-wrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Indicazioni cliniche</div>
+      <div class="recommendations" id="recommendations-wrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="info-box warning">
+        <strong>⚕ Avvertenza medico-legale:</strong> Questo report è uno strumento di supporto clinico. La diagnosi definitiva di dolore neuropatico richiede la valutazione clinica complessiva da parte di un medico specialista. Il trattamento deve essere personalizzato sulla base della storia clinica individuale del paziente.
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-nav secondary" onclick="restartApp()">← Nuova valutazione</button>
+      <button class="btn-nav" onclick="window.print()">Stampa Report</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TOTAL_STEPS = 5;
+let currentStep = 0;
+const answers = {};
+const dn4Scores = {};
+let dn4Total = 0;
+
+function buildStepDots() {
+  const wrap = document.getElementById('stepIndicator');
+  wrap.innerHTML = '';
+  for (let i = 0; i <= TOTAL_STEPS; i++) {
+    const d = document.createElement('div');
+    d.className = 'step-dot' + (i < currentStep ? ' done' : '') + (i === currentStep ? ' active' : '');
+    wrap.appendChild(d);
+  }
+}
+
+function updateProgress() {
+  const pct = (currentStep / TOTAL_STEPS) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  const labels = ['Inizio', 'Anamnesi', 'Caratteristiche', 'Scala DN4', 'Impatto', 'Report'];
+  document.getElementById('progressLabel').textContent = labels[currentStep] || '';
+  buildStepDots();
+}
+
+function showStep(n) {
+  document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+  document.getElementById('step-' + n).classList.remove('hidden');
+  currentStep = n;
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextStep() { showStep(currentStep + 1); }
+function prevStep() { showStep(currentStep - 1); }
+
+function selectChoice(id, btn) {
+  document.querySelectorAll('#' + id + ' .btn-choice').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[id] = btn.dataset.val;
+}
+
+function selectScale(id, btn) {
+  document.querySelectorAll('#' + id + ' .scale-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[id] = parseInt(btn.dataset.val);
+}
+
+function toggleCheckbox(el, id) {
+  el.classList.toggle('checked');
+  if (!answers[id]) answers[id] = [];
+  const label = el.querySelector('.chk-label').textContent;
+  if (el.classList.contains('checked')) {
+    answers[id].push(label);
+  } else {
+    answers[id] = answers[id].filter(v => v !== label);
+  }
+}
+
+function selectDN4(id, btn, val) {
+  document.querySelectorAll('#' + id + ' .btn-choice').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  dn4Scores[id] = val;
+  dn4Total = Object.values(dn4Scores).reduce((a, b) => a + b, 0);
+  document.getElementById('dn4-score-live').textContent = dn4Total + ' / 10';
+  document.getElementById('dn4-score-bar').style.width = (dn4Total / 10 * 100) + '%';
+  const bar = document.getElementById('dn4-score-bar');
+  if (dn4Total >= 4) bar.style.background = '#C0392B';
+  else bar.style.background = 'var(--accent)';
+}
+
+function showResults() {
+  const nrs = answers['q4'] !== undefined ? answers['q4'] : '—';
+  const patologiaMap = { diabete: 'Diabete mellito', herpes: 'Herpes zoster / PHN', lesione: 'Lesione nervosa', sclerosi: 'Sclerosi multipla', ictus: 'Ictus / lesione centrale', tumore: 'Tumore / chemioterapia', nessuna: 'Nessuna nota' };
+  const durataMap = { acuto: '< 1 mese', subacuto: '1–3 mesi', cronico: '3–12 mesi', 'cronico-lungo': '> 1 anno' };
+
+  document.getElementById('res-dn4').textContent = dn4Total + ' / 10';
+  document.getElementById('res-nrs').textContent = nrs !== '—' ? nrs + ' / 10' : '—';
+  document.getElementById('res-patologia').textContent = patologiaMap[answers['q1']] || '—';
+  document.getElementById('res-durata').textContent = durataMap[answers['q2']] || '—';
+
+  const circle = document.getElementById('result-circle');
+  const title = document.getElementById('result-title');
+  const sub = document.getElementById('result-sub');
+  circle.textContent = dn4Total;
+
+  if (dn4Total >= 4) {
+    circle.className = 'score-circle high';
+    title.textContent = 'Dolore Neuropatico Probabile';
+    sub.textContent = 'Il punteggio DN4 ≥ 4 indica una probabilità elevata di componente neuropatica. Si raccomanda approfondimento specialistico.';
+  } else if (dn4Total >= 2) {
+    circle.className = 'score-circle mid';
+    title.textContent = 'Componente Neuropatica Possibile';
+    sub.textContent = 'Il quadro clinico suggerisce una possibile componente neuropatica. Utile monitoraggio e rivalutazione.';
+  } else {
+    circle.className = 'score-circle low';
+    title.textContent = 'Dolore Neuropatico Improbabile';
+    sub.textContent = 'Il punteggio DN4 < 2 indica bassa probabilità di componente neuropatica. Considerare altra origine del dolore.';
+  }
+
+  const f1v = parseInt(answers['f1'] || 0);
+  const f2v = parseInt(answers['f2'] || 0);
+  const f3v = parseInt(answers['f3'] || 0);
+  const funcTotal = f1v + f2v + f3v;
+
+  const breakdownWrap = document.getElementById('breakdown-wrap');
+  const items = [
+    { label: 'Punteggio DN4 (0–10)', val: dn4Total, max: 10, color: dn4Total >= 4 ? '#C0392B' : '#2D5A8E' },
+    { label: 'Intensità NRS (0–10)', val: nrs !== '—' ? nrs : 0, max: 10, color: '#7A4F6D' },
+    { label: 'Impatto funzionale (0–9)', val: funcTotal, max: 9, color: '#2A6B4A' },
+    { label: 'Sintomi neuropatici riferiti', val: (answers['q5'] || []).length, max: 6, color: '#8A5A00' },
+  ];
+  breakdownWrap.innerHTML = items.map(it => `
+    <div class="breakdown-item">
+      <span class="breakdown-label">${it.label}</span>
+      <div class="breakdown-bar-outer">
+        <div class="breakdown-bar-inner" style="width: ${(it.val / it.max) * 100}%; background: ${it.color};"></div>
+      </div>
+      <span class="breakdown-val">${it.val}</span>
+    </div>
+  `).join('');
+
+  const recWrap = document.getElementById('recommendations-wrap');
+  const recs = [];
+
+  if (dn4Total >= 4) {
+    recs.push({ icon: '🧠', bg: '#FAEAEA', title: 'Consulenza neurologica o algologica', desc: 'Il quadro clinico suggerisce un dolore a componente neuropatica. Indicata valutazione specialistica per definire eziologia e piano terapeutico.' });
+    recs.push({ icon: '💊', bg: '#E8F0FA', title: 'Farmaci di prima linea per dolore neuropatico', desc: 'Considerare gabapentin, pregabalin, duloxetina o amitriptilina a basso dosaggio, secondo le linee guida IASP/EFNS e la comorbidità del paziente.' });
+  } else if (dn4Total >= 2) {
+    recs.push({ icon: '🔍', bg: '#FFF3DC', title: 'Monitoraggio e rivalutazione', desc: 'Il quadro è incerto. Utile rivalutare il paziente dopo 4–6 settimane o in caso di peggioramento sintomatologico.' });
+  } else {
+    recs.push({ icon: '✅', bg: '#E5F2EB', title: 'Approfondire altre cause', desc: 'La componente neuropatica è improbabile. Valutare cause muscoloscheletriche, infiammatorie o viscerali.' });
+  }
+
+  if (funcTotal >= 5) {
+    recs.push({ icon: '🧘', bg: '#F5EEF3', title: 'Supporto psicologico e riabilitativo', desc: 'L\'impatto sulla qualità della vita è elevato. Considerare supporto psicologico, tecniche di gestione del dolore cronico e programma riabilitativo multimodale.' });
+  }
+
+  if (answers['f4'] === 'no' || answers['f4'] === 'fans') {
+    recs.push({ icon: '⚠️', bg: '#FFF3DC', title: 'Rivalutare il piano terapeutico', desc: 'I FANS e gli analgesici comuni hanno scarsa efficacia nel dolore neuropatico. È indicata una revisione della terapia con farmaci specifici.' });
+  }
+
+  if ((answers['q5'] || []).includes('Dolore al tatto (allodinia)')) {
+    recs.push({ icon: '🤲', bg: '#E8F0FA', title: 'Allodinia presente — attenzione alla gestione topica', desc: 'La presenza di allodinia indica sensibilizzazione centrale o periferica. Può beneficiare di cerotti alla lidocaina, capsaicina topica o modulatori centrali.' });
+  }
+
+  recWrap.innerHTML = recs.map(r => `
+    <div class="rec-item">
+      <div class="rec-icon" style="background: ${r.bg};">${r.icon}</div>
+      <div>
+        <div class="rec-body-title">${r.title}</div>
+        <div class="rec-body-desc">${r.desc}</div>
+      </div>
+    </div>
+  `).join('');
+
+  showStep(5);
+}
+
+function restartApp() {
+  Object.keys(answers).forEach(k => delete answers[k]);
+  Object.keys(dn4Scores).forEach(k => delete dn4Scores[k]);
+  dn4Total = 0;
+  document.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.checkbox-item').forEach(b => b.classList.remove('checked'));
+  document.getElementById('dn4-score-live').textContent = '0 / 10';
+  document.getElementById('dn4-score-bar').style.width = '0%';
+  showStep(0);
+}
+
+updateProgress();
+</script>
+</body>
+</html>
