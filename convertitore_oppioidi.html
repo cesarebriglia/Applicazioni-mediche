@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Convertitore Equianalgesico Oppioidi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.2.0/tabler-icons.min.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F8F7F4;
+    --surface: #FFFFFF;
+    --surface-2: #F2F0EC;
+    --border: rgba(0,0,0,0.10);
+    --border-md: rgba(0,0,0,0.18);
+    --text: #1A1916;
+    --text-2: #5C5A55;
+    --text-3: #9A9891;
+    --accent: #1A1916;
+    --accent-fg: #FFFFFF;
+    --amber-bg: #FEF3DC;
+    --amber-border: #E8A830;
+    --amber-text: #7A4B0A;
+    --red-bg: #FCEAEA;
+    --red-border: #E05252;
+    --red-text: #8B1A1A;
+    --blue-bg: #E8F0FC;
+    --blue-text: #1A4A9C;
+    --coral-bg: #FAEAE4;
+    --coral-text: #8B3A20;
+    --green-bg: #E6F2E8;
+    --green-text: #1E5C28;
+    --pink-bg: #F7E8F2;
+    --pink-text: #7A2060;
+    --purple-bg: #EEEAF8;
+    --purple-text: #3D2898;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* Header */
+  .page-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 0 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .page-header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .logo-area { display: flex; align-items: center; gap: 12px; }
+  .logo-pill {
+    background: var(--accent);
+    color: var(--accent-fg);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 6px;
+  }
+  .page-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .page-subtitle {
+    font-size: 13px;
+    color: var(--text-3);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Main */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+
+  /* Disclaimer */
+  .disclaimer {
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-border);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 32px;
+  }
+  .disclaimer i { font-size: 18px; color: var(--amber-text); flex-shrink: 0; margin-top: 1px; }
+  .disclaimer-text { font-size: 13px; color: var(--amber-text); line-height: 1.6; }
+  .disclaimer-text strong { font-weight: 600; }
+
+  /* Input panel */
+  .input-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 28px 28px 24px;
+    margin-bottom: 36px;
+  }
+  .input-panel-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    margin-bottom: 20px;
+  }
+  .input-row {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr auto;
+    gap: 14px;
+    align-items: end;
+  }
+  .field { display: flex; flex-direction: column; gap: 7px; }
+  .field label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    letter-spacing: 0.02em;
+  }
+  select, input[type=number] {
+    height: 44px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-md);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0 14px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239A9891' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  input[type=number] { background-image: none; }
+  select:focus, input[type=number]:focus {
+    border-color: var(--text);
+    box-shadow: 0 0 0 3px rgba(26,25,22,0.08);
+    background-color: var(--surface);
+  }
+  .btn-convert {
+    height: 44px;
+    padding: 0 24px;
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-convert:hover { opacity: 0.85; }
+  .btn-convert:active { transform: scale(0.97); }
+
+  /* MME badge */
+  .mme-row {
+    display: none;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    align-items: center;
+    gap: 10px;
+  }
+  .mme-row.visible { display: flex; }
+  .mme-label { font-size: 13px; color: var(--text-2); }
+  .mme-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .mme-unit { font-size: 13px; color: var(--text-3); font-family: 'DM Mono', monospace; }
+
+  /* Section */
+  .section { margin-bottom: 36px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .section-header i { font-size: 16px; color: var(--text-3); }
+  .section-header span {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+  }
+
+  /* Cards grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 10px;
+  }
+  .opioid-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 16px 14px;
+    transition: border-color 0.15s, transform 0.15s;
+    cursor: default;
+  }
+  .opioid-card:hover { border-color: var(--border-md); transform: translateY(-1px); }
+  .opioid-card.source {
+    border: 2px solid var(--accent);
+    background: var(--surface-2);
+  }
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+  .card-name { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .source-tag {
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--accent);
+    color: var(--accent-fg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    margin-left: 6px;
+  }
+  .card-dose {
+    font-family: 'DM Mono', monospace;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .card-dose-unit { font-size: 12px; color: var(--text-3); margin-bottom: 10px; }
+  .card-dose-special {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--red-text);
+    background: var(--red-bg);
+    border-radius: 6px;
+    padding: 4px 8px;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+  .card-routes { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+  .route-badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 100px;
+    letter-spacing: 0.02em;
+  }
+  .route-oral { background: var(--blue-bg); color: var(--blue-text); }
+  .route-parenteral { background: var(--coral-bg); color: var(--coral-text); }
+  .route-transdermal { background: var(--green-bg); color: var(--green-text); }
+  .route-sublinguale { background: var(--pink-bg); color: var(--pink-text); }
+  .route-intranasale { background: var(--purple-bg); color: var(--purple-text); }
+  .card-t12 { font-size: 11px; color: var(--text-3); }
+  .card-t12 b { color: var(--text-2); font-weight: 500; }
+
+  /* Elimination table */
+  .elim-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .elim-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .elim-card-header {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .elim-card-header i { font-size: 15px; color: var(--text-3); }
+  .elim-rows { padding: 4px 0; }
+  .elim-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 8px;
+    padding: 7px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .elim-row:last-child { border-bottom: none; }
+  .elim-key { color: var(--text-3); font-weight: 500; padding-top: 1px; }
+  .elim-val { color: var(--text); line-height: 1.5; }
+
+  /* Footer */
+  .page-footer {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 32px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+    flex-wrap: wrap;
+  }
+  .footer-note { font-size: 12px; color: var(--text-3); line-height: 1.6; max-width: 500px; }
+  .footer-note a { color: var(--text-2); text-decoration: underline; }
+  .footer-version {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+
+  /* Hidden results */
+  .results-section { display: none; }
+  .results-section.visible { display: block; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .main { padding: 24px 16px 60px; }
+    .page-header-inner { padding: 0 16px; }
+    .input-row { grid-template-columns: 1fr; }
+    .btn-convert { width: 100%; justify-content: center; }
+    .page-footer { flex-direction: column; padding: 24px 16px 40px; }
+    .input-panel { padding: 20px 16px; }
+    .cards-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .elim-grid { grid-template-columns: 1fr; }
+    .page-subtitle { display: none; }
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in { animation: fadeUp 0.3s ease forwards; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="logo-area">
+      <span class="logo-pill">Rx</span>
+      <span class="page-title">Convertitore Oppioidi</span>
+    </div>
+    <span class="page-subtitle">Tabelle di equianalgesia — uso clinico orientativo</span>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="disclaimer">
+    <i class="ti ti-alert-triangle"></i>
+    <div class="disclaimer-text">
+      <strong>Avviso clinico:</strong> Le conversioni equianalgesiche sono stime basate su studi di popolazione e presentano variabilità interindividuale significativa. Non sostituiscono la valutazione clinica. Per metadone, buprenorfina ad alte dosi e popolazioni speciali (anziani, IRC, IRC avanzata) consultare sempre uno specialista. Riesaminare e titrare dopo ogni conversione.
+    </div>
+  </div>
+
+  <div class="input-panel">
+    <div class="input-panel-title">Inserisci oppioide e dosaggio</div>
+    <div class="input-row">
+      <div class="field">
+        <label for="opioid-select">Oppioide sorgente</label>
+        <select id="opioid-select">
+          <option value="">Seleziona un oppioide...</option>
+          <option value="morphine">Morfina</option>
+          <option value="oxycodone">Ossicodone</option>
+          <option value="hydromorphone">Idromorfone</option>
+          <option value="fentanyl">Fentanil</option>
+          <option value="tramadol">Tramadolo</option>
+          <option value="codeine">Codeina</option>
+          <option value="buprenorphine">Buprenorfina</option>
+          <option value="methadone">Metadone</option>
+          <option value="tapentadol">Tapentadolo</option>
+          <option value="hydrocodone">Idrocodone</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="dose-input">Dosaggio totale giornaliero (mg/die)</label>
+        <input type="number" id="dose-input" placeholder="es. 60" min="0.001" step="any" />
+      </div>
+      <button class="btn-convert" onclick="convert()">
+        <i class="ti ti-arrows-exchange"></i> Converti
+      </button>
+    </div>
+    <div class="mme-row" id="mme-row">
+      <span class="mme-label">Dose equianalgesica totale:</span>
+      <span class="mme-value" id="mme-value">—</span>
+      <span class="mme-unit">mg MME/die</span>
+    </div>
+  </div>
+
+  <div class="results-section" id="results-section">
+
+    <div class="section animate-in">
+      <div class="section-header">
+        <i class="ti ti-pill"></i>
+        <span>Dosi equivalenti</span>
+      </div>
+      <div class="cards-grid" id="cards-grid"></div>
+    </div>
+
+    <div class="section animate-in" style="animation-delay:0.1s">
+      <div class="section-header">
+        <i class="ti ti-dna"></i>
+        <span>Farmacocinetica e vie di eliminazione</span>
+      </div>
+      <div class="elim-grid" id="elim-grid"></div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="page-footer">
+    <div class="footer-note">
+      Basato su tabelle di equianalgesia standard (OMS, EAPC, UpToDate). Le dosi sono riferite alla via orale dove non diversamente specificato. Aggiornato 2024. Riservato a professionisti sanitari.
+    </div>
+    <div class="footer-version">v1.0 · solo uso orientativo</div>
+  </div>
+</footer>
+
+<script>
+const OPIOIDS = {
+  morphine: {
+    name: "Morfina", mmeRatio: 1,
+    routes: ["oral","parenteral"], t12: "2–4 ore",
+    elimination: {
+      "Metabolismo": "Epatico — glucuronidazione (UGT2B7)",
+      "Metaboliti attivi": "M6G (attivo, analgesico), M3G (inattivo, neuroeccitatorio)",
+      "Escrezione": "Renale >90% (M6G, M3G coniugati)",
+      "Emivita plasmatica": "2–4 ore",
+      "Attenzione": "Accumulo M6G in insufficienza renale"
+    }
+  },
+  oxycodone: {
+    name: "Ossicodone", mmeRatio: 1.5,
+    routes: ["oral"], t12: "3–5 ore",
+    elimination: {
+      "Metabolismo": "Epatico CYP3A4 (→norossic., inattivo), CYP2D6 (→ossimorfone, attivo)",
+      "Metaboliti attivi": "Ossimorfone (CYP2D6, potente analgesico)",
+      "Escrezione": "Renale ~90% (metaboliti coniugati)",
+      "Emivita plasmatica": "3–5 ore (IR); 12h (CR)",
+      "Attenzione": "Interazioni significative CYP3A4 e CYP2D6"
+    }
+  },
+  hydromorphone: {
+    name: "Idromorfone", mmeRatio: 4,
+    routes: ["oral","parenteral"], t12: "2–3 ore",
+    elimination: {
+      "Metabolismo": "Epatico — glucuronidazione (→H3G, neuroeccitatorio)",
+      "Metaboliti attivi": "Idromorfone-3-glucuronide (neuroeccitatorio, non analgesico)",
+      "Escrezione": "Renale ~75% (H3G)",
+      "Emivita plasmatica": "2–3 ore",
+      "Attenzione": "Accumulo H3G in insufficienza renale → mioclonie, iperalgesia"
+    }
+  },
+  fentanyl: {
+    name: "Fentanil", mmeRatio: 100,
+    routes: ["transdermal","parenteral","sublinguale","intranasale"], t12: "3–7h IV / 17–27h TD",
+    elimination: {
+      "Metabolismo": "Epatico CYP3A4 (→norfentanyl, inattivo); metabolismo intestinale",
+      "Metaboliti attivi": "Nessuno clinicamente rilevante",
+      "Escrezione": "Renale ~75% (metaboliti), fecale ~9%",
+      "Emivita plasmatica": "3–7h (IV); 17–27h (cerotto per effetto deposito)",
+      "Note PK": "Molto lipofilo, grande Vd (4–6 L/kg), ampio legame proteico (80–85%)"
+    }
+  },
+  tramadol: {
+    name: "Tramadolo", mmeRatio: 0.1,
+    routes: ["oral","parenteral"], t12: "5–7 ore",
+    elimination: {
+      "Metabolismo": "Epatico CYP2D6 (→O-desmetiltramadolo M1, attivo), CYP3A4",
+      "Metaboliti attivi": "M1 = O-desmetiltramadolo (principale effetto oppioide)",
+      "Escrezione": "Renale ~90% (M1 glucuronide, tramadolo immodificato)",
+      "Emivita plasmatica": "5–7h (tramadolo); ~9h (M1)",
+      "Attenzione": "Poor metabolizer CYP2D6: effetto analgesico molto ridotto; ultra-rapid: rischio tossicità"
+    }
+  },
+  codeine: {
+    name: "Codeina", mmeRatio: 0.15,
+    routes: ["oral"], t12: "2.5–3 ore",
+    elimination: {
+      "Metabolismo": "Epatico CYP2D6 (~10% → morfina, attiva), CYP3A4 (→norcodeina)",
+      "Metaboliti attivi": "Morfina (via CYP2D6, ~10% della dose)",
+      "Escrezione": "Renale ~90% (glucuronidi codeina + morfina)",
+      "Emivita plasmatica": "2.5–3 ore",
+      "Attenzione": "Ultra-rapid metabolizer CYP2D6: rischio intossicazione da morfina"
+    }
+  },
+  buprenorphine: {
+    name: "Buprenorfina", mmeRatio: 30,
+    routes: ["transdermal","sublinguale","parenteral"], t12: "24–42 ore",
+    elimination: {
+      "Metabolismo": "Epatico CYP3A4 (→norbuprenorfina, deacetilazione), glucuronidazione",
+      "Metaboliti attivi": "Norbuprenorfina (agonista parziale μ, attiva)",
+      "Escrezione": "Fecale/biliare ~70%, renale ~30%",
+      "Emivita plasmatica": "24–42h (SL); ~26h (TD)",
+      "Note PK": "Agonista parziale μ — effetto tetto sulla depressione respiratoria. Elevato legame a proteine (96%)."
+    }
+  },
+  methadone: {
+    name: "Metadone", mmeRatio: null,
+    routes: ["oral","parenteral"], t12: "8–59 ore",
+    elimination: {
+      "Metabolismo": "Epatico CYP3A4, CYP2D6, CYP2C19, CYP2C9 (alta variabilità)",
+      "Metaboliti attivi": "EDDP, EMDP (inattivi)",
+      "Escrezione": "Fecale ~60%, renale ~20% (dipende dal pH urinario)",
+      "Emivita plasmatica": "8–59 ore (alta variabilità interindividuale)",
+      "Attenzione": "Conversione estremamente variabile — CONSULTARE SEMPRE UNO SPECIALISTA"
+    }
+  },
+  tapentadol: {
+    name: "Tapentadolo", mmeRatio: 0.4,
+    routes: ["oral"], t12: "4 ore",
+    elimination: {
+      "Metabolismo": "Glucuronidazione diretta UGT1A9 e UGT2B7 (>70%); CYP non significativo",
+      "Metaboliti attivi": "Nessuno clinicamente rilevante",
+      "Escrezione": "Renale ~99% (glucuronidi + solfato coniugati)",
+      "Emivita plasmatica": "~4 ore",
+      "Note PK": "Doppio meccanismo: agonismo μ + inibizione reuptake NA. Meno interazioni CYP rispetto ad altri oppioidi."
+    }
+  },
+  hydrocodone: {
+    name: "Idrocodone", mmeRatio: 1,
+    routes: ["oral"], t12: "3.8–6 ore",
+    elimination: {
+      "Metabolismo": "Epatico CYP2D6 (→idromorfone, attivo), CYP3A4 (→noridrocodone, inattivo)",
+      "Metaboliti attivi": "Idromorfone (CYP2D6, ~1% della dose ma molto potente)",
+      "Escrezione": "Renale ~26–75% (non metabolizzato + glucuronidi)",
+      "Emivita plasmatica": "3.8–6 ore",
+      "Attenzione": "Variabilità CYP2D6 influenza la produzione di idromorfone e l'effetto analgesico"
+    }
+  }
+};
+
+const ROUTE_LABELS = {
+  oral: { label: "Orale", cls: "route-oral" },
+  parenteral: { label: "Parenterale", cls: "route-parenteral" },
+  transdermal: { label: "Transdermica", cls: "route-transdermal" },
+  sublinguale: { label: "Sublinguale", cls: "route-sublinguale" },
+  intranasale: { label: "Intranasale", cls: "route-intranasale" }
+};
+
+function fmtDose(val) {
+  if (val < 0.01) return val.toFixed(4);
+  if (val < 1) return val.toFixed(3);
+  if (val < 10) return val.toFixed(2);
+  if (val < 100) return parseFloat(val.toFixed(1)).toString();
+  return Math.round(val).toString();
+}
+
+function convert() {
+  const sel = document.getElementById('opioid-select').value;
+  const dose = parseFloat(document.getElementById('dose-input').value);
+  if (!sel) { alert("Seleziona un oppioide."); return; }
+  if (isNaN(dose) || dose <= 0) { alert("Inserisci un dosaggio valido (> 0)."); return; }
+
+  const source = OPIOIDS[sel];
+  const mme = source.mmeRatio !== null ? dose * source.mmeRatio : null;
+
+  const mmeRow = document.getElementById('mme-row');
+  if (mme !== null) {
+    document.getElementById('mme-value').textContent = fmtDose(mme);
+    mmeRow.classList.add('visible');
+  } else {
+    mmeRow.classList.remove('visible');
+  }
+
+  const grid = document.getElementById('cards-grid');
+  const elimGrid = document.getElementById('elim-grid');
+  grid.innerHTML = '';
+  elimGrid.innerHTML = '';
+
+  Object.entries(OPIOIDS).forEach(([key, op]) => {
+    const isSource = key === sel;
+    let doseHTML = '';
+
+    if (op.name === "Metadone") {
+      doseHTML = `<div class="card-dose-special"><i class="ti ti-alert-circle" style="font-size:13px;vertical-align:-1px;margin-right:4px"></i>Consulto spec.</div>`;
+    } else if (isSource) {
+      doseHTML = `<div class="card-dose">${fmtDose(dose)}</div><div class="card-dose-unit">mg/die (sorgente)</div>`;
+    } else if (mme !== null && op.mmeRatio !== null) {
+      const eq = mme / op.mmeRatio;
+      doseHTML = `<div class="card-dose">${fmtDose(eq)}</div><div class="card-dose-unit">mg/die</div>`;
+    } else {
+      doseHTML = `<div class="card-dose" style="font-size:18px;color:var(--text-3)">N/D</div><div class="card-dose-unit">—</div>`;
+    }
+
+    const routeBadges = op.routes.map(r => {
+      const rl = ROUTE_LABELS[r];
+      return `<span class="route-badge ${rl.cls}">${rl.label}</span>`;
+    }).join('');
+
+    grid.innerHTML += `
+      <div class="opioid-card${isSource ? ' source' : ''}">
+        <div class="card-header">
+          <div class="card-name">${op.name}</div>
+          ${isSource ? '<span class="source-tag">Sorgente</span>' : ''}
+        </div>
+        ${doseHTML}
+        <div class="card-routes">${routeBadges}</div>
+        <div class="card-t12"><b>t½:</b> ${op.t12}</div>
+      </div>`;
+
+    const elimRows = Object.entries(op.elimination).map(([k,v]) =>
+      `<div class="elim-row"><div class="elim-key">${k}</div><div class="elim-val">${v}</div></div>`
+    ).join('');
+
+    elimGrid.innerHTML += `
+      <div class="elim-card">
+        <div class="elim-card-header">
+          <i class="ti ti-pill"></i> ${op.name}
+        </div>
+        <div class="elim-rows">${elimRows}</div>
+      </div>`;
+  });
+
+  const section = document.getElementById('results-section');
+  section.classList.add('visible');
+  section.querySelectorAll('.animate-in').forEach((el, i) => {
+    el.style.animationDelay = (i * 0.08) + 's';
+    el.style.opacity = '0';
+    void el.offsetWidth;
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = '';
+  });
+
+  setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+}
+
+document.getElementById('dose-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') convert();
+});
+</script>
+</body>
+</html>
