@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calcolatore Posologia Vitamina D + Nota 96 AIFA | Clinico v4</title>
+  <style>
+    :root {
+      --primary: #2563eb; --primary-dark: #1d4ed8;
+      --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --muted: #64748b;
+      --border: #e2e8f0; --warning: #f59e0b; --danger: #ef4444;
+      --success: #10b981; --light-blue: #eff6ff; --light-red: #fef2f2;
+      --light-green: #f0fdf4; --light-yellow: #fefce8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; padding: 16px; }
+    .container { max-width: 880px; margin: 0 auto; background: var(--card); border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.07); padding: 22px; }
+    h1 { font-size: 1.45rem; margin-bottom: 6px; color: var(--primary-dark); }
+    .disclaimer { background: #fffbeb; border-left: 4px solid var(--warning); padding: 12px; margin-bottom: 18px; font-size: 0.88rem; color: #92400e; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.92rem; }
+    input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; transition: 0.2s; }
+    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    .btn { background: var(--primary); color: white; border: none; padding: 12px 16px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .btn:hover { background: var(--primary-dark); }
+    .btn.secondary { background: var(--muted); }
+    .btn.outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); }
+    .btn.outline:hover { background: var(--light-blue); }
+    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .output { margin-top: 22px; padding: 18px; border: 1px solid var(--border); border-radius: 10px; background: #fafafa; display: none; }
+    .output h2 { font-size: 1.2rem; margin-bottom: 14px; color: var(--primary-dark); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .phase-box, .reim-box { background: white; padding: 14px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--primary); }
+    .phase-box h3, .reim-box h3 { font-size: 1rem; margin-bottom: 6px; color: var(--primary-dark); }
+    .phase-box p, .reim-box p { margin-bottom: 6px; font-size: 0.95rem; }
+    .conv-table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 0.9rem; }
+    .conv-table th, .conv-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+    .conv-table th { background: #f1f5f9; }
+    .notes { background: var(--light-blue); padding: 12px; border-radius: 8px; font-size: 0.88rem; margin-top: 10px; }
+    .notes ul { margin-left: 18px; margin-top: 6px; }
+    .notes li { margin-bottom: 4px; }
+    .warning { background: var(--light-red); padding: 10px; border-radius: 6px; font-size: 0.88rem; margin-top: 10px; color: #991b1b; border-left: 4px solid #dc2626; }
+    .info { background: var(--light-green); padding: 10px; border-radius: 6px; font-size: 0.88rem; margin-top: 10px; color: #166534; border-left: 4px solid #16a34a; }
+    .tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: 600; margin-right: 6px; }
+    .tag.deficit { background: #fee2e2; color: #991b1b; }
+    .tag.insuff { background: #fef3c7; color: #92400e; }
+    .tag.norm { background: #dcfce7; color: #166534; }
+    .rx-box { background: #f8fafc; border: 1px dashed var(--muted); padding: 12px; border-radius: 8px; font-family: monospace; white-space: pre-wrap; font-size: 0.92rem; margin: 10px 0; }
+    .signature-line { margin-top: 24px; border-top: 1px dashed #94a3b8; padding-top: 10px; display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--muted); flex-wrap: wrap; gap: 8px; }
+    footer { margin-top: 24px; font-size: 0.78rem; color: var(--muted); text-align: center; border-top: 1px solid var(--border); padding-top: 12px; }
+    .protocol-toggle { display: flex; gap: 8px; margin-bottom: 16px; }
+    .protocol-toggle button { flex: 1; padding: 8px; border: 1px solid var(--border); background: white; border-radius: 6px; cursor: pointer; font-size: 0.88rem; }
+    .protocol-toggle button.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; }
+    .badge.yes { background: var(--light-green); color: #166534; border: 1px solid #86efac; }
+    .badge.maybe { background: var(--light-yellow); color: #854d0e; border: 1px solid #fde047; }
+    .badge.no { background: var(--light-red); color: #991b1b; border: 1px solid #fca5a5; }
+    .checklist { list-style: none; padding: 0; margin: 8px 0; }
+    .checklist li { padding: 4px 0; display: flex; align-items: start; gap: 6px; }
+    .checklist li::before { content: attr(data-icon); margin-right: 4px; }
+    @media print {
+      body { background: white; } .container { box-shadow: none; } .btn, .protocol-toggle, footer, .disclaimer, .history-section { display: none !important; }
+      .output { display: block !important; border: 1px solid #ccc; page-break-inside: avoid; }
+      .signature-line { display: flex !important; margin-top: 40px; }
+    }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .btn-group { flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💊 Calcolatore Posologia Vitamina D + Nota 96</h1>
+    <div class="disclaimer">
+      <strong>⚠️ Supporto decisionale (CDS).</strong> Algoritmo basato su AIFA Nota 96 (aggiornata 2024), SIOMMMS, KDIGO. 
+      La rimborsabilità SSN può variare per Regione/ASL. Verificare sempre criteri locali e RCP. Non sostituisce giudizio clinico.
+    </div>
+
+    <div class="protocol-toggle" id="protocolToggle">
+      <button class="active" data-proto="standard">📋 Standard</button>
+      <button data-proto="aggressive">🦴 Osteoporosi/Deficit Grave</button>
+      <button data-proto="renal">🩺 CKD / Epatopatia</button>
+    </div>
+
+    <form id="mainForm">
+      <div class="form-grid">
+        <div><label for="paziente">ID / Nome (opz.)</label><input type="text" id="paziente" placeholder="Es. MR 12/04"></div>
+        <div><label for="eta">Età (anni)</label><input type="number" id="eta" min="0" max="120" required></div>
+        <div><label for="sesso">Sesso</label><select id="sesso" required><option value="">Seleziona</option><option value="M">Maschio</option><option value="F">Femmina</option></select></div>
+        <div><label for="peso">Peso (kg)</label><input type="number" id="peso" min="20" max="250" step="0.1" required></div>
+        <div><label for="vitd">25(OH)D (ng/mL)</label><input type="number" id="vitd" min="0" max="150" step="0.1" required></div>
+        <div><label for="gfr">GFR stimato</label><input type="number" id="gfr" min="0" max="200" placeholder="Es. 45"></div>
+        <div><label for="fegato">Insuff. epatica</label><select id="fegato"><option value="none">Assente</option><option value="mild">Lieve</option><option value="moderate">Moderata</option><option value="severe">Grave</option></select></div>
+        <div><label for="osteoporosi">Osteoporosi (MOC)</label><select id="osteoporosi"><option value="no">No</option><option value="si">Sì</option></select></div>
+        <div><label for="osteopatia">Osteopatia metab.</label><select id="osteopatia"><option value="no">No</option><option value="si">Sì</option></select></div>
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="btn">🔍 Calcola + Nota 96</button>
+        <button type="button" class="btn outline" onclick="toggleHistory()">📜 Cronologia</button>
+      </div>
+    </form>
+
+    <div id="output" class="output">
+      <h2>📋 Schema Posologico & Rimborsabilità</h2>
+      <div id="resultContent"></div>
+      <div id="reimSection" style="margin-top:12px;"></div>
+      <div id="rxSection" style="display:none; margin-top:12px;">
+        <h3>📝 Testo pronto per prescrizione / ricetta</h3>
+        <div id="rxText" class="rx-box"></div>
+        <button class="btn outline" onclick="copyRx()" style="margin-top:6px;">📋 Copia per Cartella/Ricetta</button>
+      </div>
+      <div class="notes" id="clinicalNotes"></div>
+      <div class="signature-line">
+        <span>Medico: ________________________</span>
+        <span>Data: ____/____/________ Firma: _______________</span>
+      </div>
+      <div class="btn-group">
+        <button class="btn secondary" onclick="window.print()">🖨️ Stampa / PDF</button>
+        <button class="btn outline" onclick="resetForm()">🔄 Nuova Valutazione</button>
+      </div>
+    </div>
+
+    <div id="historySection" style="margin-top:20px; padding:16px; border:1px solid var(--border); border-radius:10px; background:#fafafa; display:none;">
+      <h3>📜 Cronologia Locale</h3>
+      <p style="font-size:0.85rem; color:var(--muted); margin-bottom:8px;">Dati salvati solo nel browser. Nessun invio online.</p>
+      <div style="overflow-x:auto;"><table id="historyTable" style="width:100%;border-collapse:collapse;font-size:0.85rem;"><thead><tr style="background:#f1f5f9;"><th style="border:1px solid var(--border);padding:6px;">Data</th><th style="border:1px solid var(--border);padding:6px;">Paziente</th><th style="border:1px solid var(--border);padding:6px;">VitD</th><th style="border:1px solid var(--border);padding:6px;">Nota 96</th><th style="border:1px solid var(--border);padding:6px;">Azioni</th></tr></thead><tbody id="historyBody"></tbody></table></div>
+      <div class="btn-group" style="margin-top:10px;">
+        <button class="btn outline" onclick="exportCSV()">📥 Esporta CSV</button>
+        <button class="btn secondary" onclick="clearHistory()">🗑️ Svuota</button>
+      </div>
+    </div>
+
+    <footer>
+      v4.0 | Open-source uso professionale | Riferimenti: AIFA Nota 96 (2024) • SIOMMMS 2024 • KDIGO CKD-MBD 2024 • EFSA 2023
+    </footer>
+  </div>
+
+  <script>
+    let currentProtocol = 'standard';
+    document.querySelectorAll('#protocolToggle button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#protocolToggle button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentProtocol = btn.dataset.proto;
+      });
+    });
+
+    document.getElementById('mainForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const d = {
+        paziente: document.getElementById('paziente').value.trim() || 'N/D',
+        eta: parseInt(document.getElementById('eta').value),
+        sesso: document.getElementById('sesso').value,
+        peso: parseFloat(document.getElementById('peso').value),
+        vitd: parseFloat(document.getElementById('vitd').value),
+        gfr: document.getElementById('gfr').value ? parseFloat(document.getElementById('gfr').value) : null,
+        fegato: document.getElementById('fegato').value,
+        osteoporosi: document.getElementById('osteoporosi').value === 'si',
+        osteopatia: document.getElementById('osteopatia').value === 'si'
+      };
+
+      let tipo = 'Colecalciferolo (Vitamina D3)';
+      let target = (d.osteoporosi || d.osteopatia || currentProtocol === 'aggressive') ? 40 : 30;
+      let notes = [];
+      let warning = '';
+
+      if (d.gfr !== null && d.gfr < 30) tipo = 'Forma attiva: Calcitriolo o Alfacalcidolo';
+      if (d.fegato === 'severe') tipo = 'Colecalciferolo con monitoraggio o forma attiva se malassorbimento';
+
+      let classe = d.vitd < 10 ? 'deficit' : d.vitd < 20 ? 'insuff' : d.vitd < target ? 'insuff' : 'norm';
+      let classeText = d.vitd < 10 ? 'Deficit grave' : d.vitd < 20 ? 'Deficit' : d.vitd < target ? 'Insufficienza' : 'Sufficiente';
+
+      let attaccoUI = 0, mantenimentoUI = 800;
+      const settimaneAttacco = 4;
+
+      if (tipo.includes('D3')) {
+        if (d.vitd < 10) {
+          attaccoUI = 300000 + (d.peso > 85 ? 100000 : 0);
+          mantenimentoUI = 1500 + (d.peso > 85 ? 500 : 0);
+        } else if (d.vitd < 20) {
+          attaccoUI = 150000 + (d.peso > 85 ? 50000 : 0);
+          mantenimentoUI = 1200 + (d.peso > 85 ? 400 : 0);
+        } else if (d.vitd < target) {
+          attaccoUI = 0;
+          mantenimentoUI = 1000 + (d.peso > 85 ? 500 : 0);
+        } else {
+          attaccoUI = 0;
+          mantenimentoUI = 800;
+        }
+        if (d.osteoporosi || d.osteopatia) mantenimentoUI = Math.max(mantenimentoUI, 1500);
+      }
+
+      if (mantenimentoUI > 4000 && !warning) warning = '⚠️ Mantenimento >4.000 UI/die: richiede supervisione specialistica e monitoraggio mensile (EFSA).';
+
+      // --- NOTA 96 LOGIC ---
+      let reimbStatus = 'no';
+      let reimbLabel = '';
+      let reimbIcon = '';
+      let reimbChecklist = [];
+      let reimbLimits = [];
+
+      if (tipo.includes('D3')) {
+        if (d.vitd < 20) {
+          const pathologies = [
+            { cond: d.osteoporosi, txt: 'Osteoporosi documentata (MOC)' },
+            { cond: d.osteopatia, txt: 'Osteopatia metabolica / Osteomalacia' },
+            { cond: d.gfr !== null && d.gfr < 60, txt: 'CKD stadio ≥3 (GFR <60)' },
+            { cond: d.fegato === 'severe', txt: 'Epatopatia grave / Malassorbimento' }
+          ];
+          const active = pathologies.filter(p => p.cond);
+          if (active.length > 0) {
+            reimbStatus = 'yes';
+            reimbLabel = '✅ RIMBORSABILE SSN (AIFA Nota 96)';
+            reimbIcon = '🟢';
+            active.forEach(p => reimbChecklist.push(p.txt));
+          } else {
+            reimbStatus = 'maybe';
+            reimbLabel = '⚠️ RIMBORSABILITÀ CONDIZIONATA / Verifica ASL';
+            reimbIcon = '🟡';
+            reimbChecklist.push('Deficit <20 ng/mL, ma assenza di patologie specifiche Nota 96');
+            reimbChecklist.push('Alcune Regioni rimborsano solo con osteoporosi, terapie croniche (cortisonici/antiepilettici) o MOC');
+          }
+        } else {
+          reimbStatus = 'no';
+          reimbLabel = '❌ NON RIMBORSABILE SSN';
+          reimbIcon = '🔴';
+          reimbChecklist.push('25(OH)D ≥ 20 ng/mL → Nota 96 esclude integrazione per valori sufficienti o prevenzione primaria');
+        }
+
+        if (attaccoUI > 500000) reimbLimits.push('Attacco >500.000 UI: supera tetti SSN. Richiede specialistica o privato.');
+        if (mantenimentoUI > 2000) reimbLimits.push('Mantenimento >2.000 UI/die: oltre limite rimborsabile standard. Valutare autorizzazione o uso privato.');
+      } else {
+        reimbStatus = 'no';
+        reimbLabel = '❌ NON RIMBORSABILE (Forma attiva)';
+        reimbIcon = '🔴';
+        reimbChecklist.push('Calcitriolo/Alfacalcidolo: prescrizione specialistica, generalmente non in fascia A per deficit semplice.');
+      }
+
+      const reimbHTML = `
+        <div class="reim-box" style="border-left-color: ${reimbStatus==='yes'?'#16a34a':reimbStatus==='maybe'?'#f59e0b':'#dc2626'}">
+          <h3>🏥 Stato Rimborsabilità SSN</h3>
+          <div class="badge ${reimbStatus}">${reimbIcon} ${reimbLabel}</div>
+          <p style="font-size:0.88rem; margin:6px 0;"><strong>Criteri Nota 96 valutati:</strong></p>
+          <ul class="checklist">
+            ${reimbChecklist.map(c => `<li data-icon="${reimbStatus==='yes'?'✅':reimbStatus==='maybe'?'⚠️':'❌'}">${c}</li>`).join('')}
+          </ul>
+          ${reimbLimits.length ? `<div class="warning" style="margin-top:8px;">${reimbLimits.map(l=>`<p style="margin:2px 0">${l}</p>`).join('')}</div>` : ''}
+          <p style="font-size:0.82rem; color:var(--muted); margin-top:8px;">ℹ️ Per prescrizione SSN: indicare in ricetta codice ICD-10 (es. M81.0 osteoporosi, E55.0 deficit vit D) e dicitura "Ai sensi Nota 96 AIFA".</p>
+        </div>`;
+
+      // --- POSOLOGY BLOCK ---
+      let posoHTML = '';
+      if (tipo.includes('D3')) {
+        if (attaccoUI > 0) {
+          const settimanaliUI = Math.round(attaccoUI / settimaneAttacco);
+          posoHTML += `<div class="phase-box">
+            <h3>📅 FASE D'ATTACCO (${settimaneAttacco} sett.)</h3>
+            <p><strong>Totale:</strong> ${attaccoUI.toLocaleString('it-IT')} UI in ${settimaneAttacco} settimane</p>
+            <p><strong>Schemi:</strong> ~${settimanaliUI.toLocaleString('it-IT')} UI/sett. o ~${Math.round(attaccoUI/7).toLocaleString('it-IT')} UI/die</p>
+          </div>`;
+        } else {
+          posoHTML += `<div class="phase-box"><h3>✅ Nessun attacco necessario</h3><p>Valore ${d.vitd} ng/mL. Iniziare mantenimento.</p></div>`;
+        }
+        posoHTML += `
+          <div class="phase-box">
+            <h3>💊 FASE DI MANTENIMENTO (dalla sett. ${settimaneAttacco + 1})</h3>
+            <p><strong>Dose:</strong> ~${mantenimentoUI.toLocaleString('it-IT')} UI/die</p>
+            <p><strong>Alternative:</strong> ${Math.round(mantenimentoUI*7).toLocaleString('it-IT')} UI/sett. o ${Math.round(mantenimentoUI*30).toLocaleString('it-IT')} UI/mese</p>
+          </div>
+          <div class="phase-box">
+            <h3>📦 Conversione commerciale (indicativa)</h3>
+            <table class="conv-table">
+              <tr><th>Formulazione</th><th>Concentrazione</th><th>Posologia suggerita</th></tr>
+              <tr><td>Gocce</td><td>400 UI/goccia</td><td>${(mantenimentoUI/400).toFixed(1)} gocce/die</td></tr>
+              <tr><td>Compresse</td><td>10.000 UI</td><td>${(mantenimentoUI/10000).toFixed(1)} cpr/die</td></tr>
+              <tr><td>Fiale/Bustine</td><td>100.000 UI</td><td>1 ogni ${Math.round(100000/mantenimentoUI)} giorni</td></tr>
+              <tr><td>Fiale/Bustine</td><td>300.000 UI</td><td>1 ogni ${Math.round(300000/mantenimentoUI)} giorni</td></tr>
+            </table>
+            <small style="color:var(--muted)">⚠️ Verificare sempre RCP del lotto prescritto.</small>
+          </div>`;
+      } else {
+        posoHTML += `<div class="phase-box"><h3>🩺 Forma attiva</h3><p>Calcitriolo 0.25–0.5 mcg/die. Titolare su PTH/Ca/P. Monitoraggio obbligatorio a 2–4 settimane.</p></div>`;
+      }
+      if (warning) posoHTML += `<div class="warning">${warning}</div>`;
+
+      document.getElementById('resultContent').innerHTML = posoHTML;
+      document.getElementById('reimSection').innerHTML = reimbHTML;
+
+      // RX TEXT
+      let rxText = `Paziente: ${d.paziente} | Età: ${d.eta} | Peso: ${d.peso} kg | 25(OH)D: ${d.vitd} ng/mL\n`;
+      rxText += `Target: ≥${target} ng/mL | Rimborsabilità: ${reimbLabel}\n`;
+      if (tipo.includes('D3')) {
+        if (attaccoUI > 0) rxText += `\n📌 ATTACCO:\nColecalciferolo ${attaccoUI.toLocaleString('it-IT')} UI totali in ${settimaneAttacco} sett. (~${Math.round(attaccoUI/7).toLocaleString('it-IT')} UI/die)\n`;
+        rxText += `\n📌 MANTENIMENTO:\nColecalciferolo ~${mantenimentoUI.toLocaleString('it-IT')} UI/die (o equivalente)\n`;
+      } else {
+        rxText += `\n📌 TERAPIA:\nCalcitriolo 0.25–0.5 mcg/die (titolare su PTH/Ca/P)\n`;
+      }
+      rxText += `\n⚠️ Controlli: 25(OH)D, Ca, P, PTH a 8–12 sett. Sospensione se ipercalcemia.\n`;
+      if (reimbStatus === 'yes') rxText += `\n📋 Nota 96 AIFA: Prescrivere con codice ICD-10 e dicitura "Ai sensi Nota 96 AIFA".\n`;
+      document.getElementById('rxText').textContent = rxText;
+      document.getElementById('rxSection').style.display = 'block';
+
+      document.getElementById('clinicalNotes').innerHTML = `
+        <strong>📝 Note cliniche:</strong>
+        <ul>
+          <li>📅 Rivalutare 25(OH)D a 8–12 settimane</li>
+          <li>🦴 Osteoporosi/Osteopatia: associare Calcio 800–1.000 mg/die se dieta insufficiente</li>
+          <li>🔍 Controindicazioni: ipercalcemia, ipercalciuria, sarcoidosi, linfomi, IRC avanzata non dialisi</li>
+          <li>💊 Interazioni: tiazidici, digitalici, antiepilettici, orlistat, corticosteroidi cronici</li>
+        </ul>`;
+
+      document.getElementById('output').style.display = 'block';
+      document.getElementById('output').scrollIntoView({behavior:'smooth'});
+      saveHistory({...d, target, schema: tipo.includes('D3') ? `Mant: ${mantenimentoUI} UI/die` : 'Forma attiva', reimbStatus, protocol: currentProtocol});
+    });
+
+    function copyRx() {
+      navigator.clipboard.writeText(document.getElementById('rxText').textContent).then(() => alert('✅ Posologia copiata!'));
+    }
+    function resetForm() {
+      document.getElementById('mainForm').reset();
+      document.getElementById('output').style.display = 'none';
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    // HISTORY
+    function getHistory() { return JSON.parse(localStorage.getItem('vitD_history_v4') || '[]'); }
+    function saveHistory(entry) {
+      const h = getHistory();
+      h.unshift({ id: Date.now(), ...entry, timestamp: new Date().toLocaleString('it-IT') });
+      if (h.length > 80) h.pop();
+      localStorage.setItem('vitD_history_v4', JSON.stringify(h));
+    }
+    function renderHistory() {
+      const tbody = document.getElementById('historyBody');
+      tbody.innerHTML = '';
+      getHistory().forEach((item, idx) => {
+        const tr = document.createElement('tr');
+        const badgeClass = item.reimbStatus==='yes'?'yes':item.reimbStatus==='maybe'?'maybe':'no';
+        tr.innerHTML = `<td style="border:1px solid var(--border);padding:6px;">${item.timestamp}</td>
+          <td style="border:1px solid var(--border);padding:6px;">${item.paziente}</td>
+          <td style="border:1px solid var(--border);padding:6px;">${item.vitd} ng/mL</td>
+          <td style="border:1px solid var(--border);padding:6px;"><span class="badge ${badgeClass}" style="padding:3px 6px;font-size:0.75rem">${item.reimbStatus==='yes'?'✅':item.reimbStatus==='maybe'?'⚠️':'❌'} SSN</span></td>
+          <td style="border:1px solid var(--border);padding:6px;">
+            <button onclick="loadEntry(${idx})" style="padding:2px 6px;font-size:0.8rem;margin-right:4px;">Carica</button>
+            <button onclick="deleteEntry(${idx})" style="padding:2px 6px;font-size:0.8rem;background:#fee2e2;border:1px solid #ef4444;border-radius:4px;cursor:pointer;">🗑️</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    function loadEntry(idx) {
+      const item = getHistory()[idx]; if(!item) return;
+      ['paziente','eta','sesso','peso','vitd','gfr','fegato','osteoporosi','osteopatia'].forEach(id => {
+        const el = document.getElementById(id);
+        if(id==='osteoporosi'||id==='osteopatia') el.value = item[id] ? 'si' : 'no';
+        else if(id==='eta'||id==='peso'||id==='vitd'||id==='gfr') el.value = item[id] || '';
+        else el.value = item[id] || '';
+      });
+      document.getElementById('output').style.display = 'block';
+      document.getElementById('output').scrollIntoView({behavior:'smooth'});
+    }
+    function deleteEntry(idx) { const h = getHistory(); h.splice(idx, 1); localStorage.setItem('vitD_history_v4', JSON.stringify(h)); renderHistory(); }
+    function clearHistory() { if(confirm('Svuotare cronologia?')) { localStorage.removeItem('vitD_history_v4'); renderHistory(); } }
+    function exportCSV() {
+      const h = getHistory(); if(!h.length) return alert('Nessun dato.');
+      const keys = ['timestamp','paziente','eta','sesso','peso','vitd','gfr','fegato','osteoporosi','osteopatia','protocol','schema','reimbStatus'];
+      const csv = [keys.join(';'), ...h.map(r => keys.map(k => `"${(r[k]||'').toString().replace(/"/g,'""')}"`).join(';'))].join('\n');
+      const blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `VitD_Nota96_${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(url);
+    }
+    function toggleHistory() {
+      const sec = document.getElementById('historySection');
+      sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
+      if(sec.style.display === 'block') renderHistory();
+    }
+  </script>
+</body>
+</html>
